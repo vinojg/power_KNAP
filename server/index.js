@@ -83,7 +83,7 @@ roomSpace.on('connection', (socket) => {
       .then((videos) => {
         roomSpace.emit('retrievePlaylist', videos);
         if (videos.length === 0) throw videos;
-        if (videos.length === 1) db.setStartTime();
+        if (videos.length >= 1) db.setStartTime();
       })
       .catch((emptyPlaylist) => {
         // Check if the thrown item is an array rather than an Error
