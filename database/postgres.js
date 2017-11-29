@@ -16,6 +16,12 @@ sequelize.authenticate()
   .then(() => console.log('Connection has been established successfully'))
   .catch(err => console.error('Unable to connect to database:', err));
 
+const Users = sequelize.define('users', {
+  google_id: Sequelize.STRING,
+  google_name: Sequelize.STRING,
+  google_avatar: Sequelize.STRING,
+});
+
 const Video = sequelize.define('video', {
   videoName: Sequelize.STRING,
   creator: Sequelize.STRING,
@@ -35,8 +41,9 @@ const Room = sequelize.define('room', {
 });
 
 // uncomment this first time running, then comment
-// Video.sync({ force: true });
-// Room.sync({ force: true });
+Video.sync({ force: true })
+Room.sync({ force: true })
+Users.sync({ force: true })
 
 const createVideoEntry = (videoData) => {
   const videoEntry = {
@@ -60,6 +67,15 @@ const findVideos = () => Video.findAll();
 const removeFromPlaylist = title => Video.find({ where: { videoName: title } })
   .then(video => video.destroy());
 
+const saveGoogleUser = function(googleProfile) {
+  return Users.create({
+    google_id: googleProfile.id, // eslint-disable-line camelcase
+    google_name: googleProfile.name.givenName, // eslint-disable-line camelcase
+    google_avatar: googleProfile.photos[0].value // eslint-disable-line camelcase
+  })
+    .catch(err => console.log('Error saving user: ', err));
+};
+
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;
 exports.incrementIndex = incrementIndex;
@@ -68,3 +84,6 @@ exports.getIndex = getIndex;
 exports.setStartTime = setStartTime;
 exports.findVideos = findVideos;
 exports.removeFromPlaylist = removeFromPlaylist;
+exports.db = sequelize;
+exports.saveGoogleUser = saveGoogleUser;
+exports.Users = Users;

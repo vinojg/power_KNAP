@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import moment from 'moment';
 import axios from 'axios';
 import cookie from 'cookie';
+
 import VideoPlayer from './VideoPlayer';
 import Playlist from './Playlist';
 import Search from './Search';
@@ -12,18 +13,18 @@ import ChatView from './ChatView';
 const roomSocket = io('/room');
 
 class RoomView extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       currentVideo: undefined,
       playlist: [],
       startOptions: null,
       isHost: false,
       message: '',
-      username: '', // refers to socketIDs when user is in chat but not logged in
-      user: null, // refers to Google username when logged in in chat
+      username: 'Anonymous', // refers to socketIDs when user is in chat but not logged in
       // TODO: eliminate the need for two separate username references
     };
+
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
     this.onPlayerReady = this.onPlayerReady.bind(this);
     this.addToPlaylist = this.addToPlaylist.bind(this);
@@ -32,9 +33,6 @@ class RoomView extends React.Component {
   }
 
   componentDidMount() {
-    if (cookie.parse(document.cookie).user) {
-      this.setState({ user: cookie.parse(document.cookie).user }) 
-    }
     this.renderRoom();
     roomSocket.on('default', () => this.setState({ currentVideo: undefined }));
     roomSocket.on('host', () => this.setState({ isHost: true }));
@@ -50,7 +48,10 @@ class RoomView extends React.Component {
         message,
       });
     });
-    roomSocket.on('id', id => this.setState({ username: id }));
+    // roomSocket.on('id', id => this.setState({ username: id }));
+    if (cookie.parse(document.cookie).user) {
+      this.setState({ username: cookie.parse(document.cookie).user })
+    }
   }
 
   componentWillUnmount() {
@@ -133,13 +134,8 @@ class RoomView extends React.Component {
       playlistComponent = <Playlist playlist={this.state.playlist} />;
     }
 
-    const view = this.state.user ?
-      <span className="login">Welcome, {this.state.user} <a href="/auth/logout">Logout</a></span> :
-      <span className="login">Login with <a href="/auth/google">Google</a></span>;
-
     return (
       <div className="room">
-        <div className="container navbar">fam.ly {view}</div>
         {playlistComponent}
         <VideoPlayer
           currentVideo={this.state.currentVideo}
@@ -159,4 +155,5 @@ class RoomView extends React.Component {
   }
 }
 
+export default RoomView;
 // ReactDOM.render(<RoomView />, document.getElementById('room'));

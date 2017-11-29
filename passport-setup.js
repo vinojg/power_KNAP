@@ -1,5 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20');
+const db = require('./database/postgres.js');
 
 passport.serializeUser((user, done) => {
   // give the browser the users google profile id to store in cookie
@@ -16,5 +17,14 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLECLIENTID,
   clientSecret: process.env.GOOGLECLIENTSECRET,
 }, (accessToken, refreshToken, profile, done) => {
-  done(null, profile);
+  return db.Users.findOne({where: {google_id: profile.id} })
+    .then(user => {
+      if (user) {
+        return done(null, user);
+      } else {
+        db.saveGoogleUser(profile)
+          .then(user => done(null, profile));
+      }
+    })
+    .catch(err => done(err, null));
 }));

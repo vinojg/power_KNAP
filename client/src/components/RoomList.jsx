@@ -1,14 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import RoomListEntry from './RoomListEntry';
 
-const RoomList = ({ rooms }) => (
-  <div>
-    {rooms.map(room => room)}
-  </div>
+const RoomList = (props) => (
+  <ul>
+    {props.rooms.map(room => <RoomListEntry room={room} changeView={props.changeView} />)}
+  </ul>
 );
-
-RoomList.propTypes = {
-  rooms: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
 
 export default RoomList;

@@ -1,7 +1,7 @@
 body {
   margin: 0 auto;
-  color: white;
-  background: #17191D;
+  color: #5C0100;
+
   font-family: 'Raleway', sans-serif;
   font-size: 11px;
 }
@@ -48,14 +48,13 @@ body {
   color: #21252B;
   font-size: 1.5rem;
   text-shadow: white 0px 0px 0.1px;
-  /*background: #17191D;*/
 }
 
 /***** Playlist *****/
 .playlist {
   grid-area: playlist;
   padding: 18px;
-  background: #17191D;
+
   border-right: 0.2px solid white;
   display: flex;
   flex-direction: column;
@@ -213,7 +212,6 @@ body {
 .userChat {
   grid-area: chat;
   padding: 18px;
-  background: #17191D;
   border-left: 0.2px solid white;
   display: flex;
   flex-direction: column;
@@ -249,11 +247,3 @@ body {
 .login {
   float: right;
 }
-
-
-
-
-
-
-
-
