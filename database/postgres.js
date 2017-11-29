@@ -2,7 +2,14 @@ require('dotenv').config();
 const Sequelize = require('sequelize');
 
 let params = {};
-if (!process.env.LOCAL) { params = { dialect: 'postgres', protocol: 'postgres', logging: false, dialectOptions: { ssl: true } }; }
+if (!process.env.LOCAL) {
+  params = {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    logging: false,
+    dialectOptions: { ssl: true },
+  };
+}
 const sequelize = new Sequelize(process.env.DATABASE_URL, params);
 
 sequelize.authenticate()
@@ -16,6 +23,7 @@ const Video = sequelize.define('video', {
   description: Sequelize.STRING,
 });
 
+/* not used?? */
 const Playlist = sequelize.define('playlist', {
   playlistName: Sequelize.STRING,
 });
@@ -26,8 +34,9 @@ const Room = sequelize.define('room', {
   startTime: Sequelize.DATE,
 });
 
-// Video.sync({ force: true })
-// Room.sync({ force: true })
+// uncomment this first time running, then comment
+// Video.sync({ force: true });
+// Room.sync({ force: true });
 
 const createVideoEntry = (videoData) => {
   const videoEntry = {
@@ -48,7 +57,8 @@ const setStartTime = () => Room.findById(1).then(room => room.update({ startTime
 
 // Video Queries
 const findVideos = () => Video.findAll();
-const removeFromPlaylist = title => Video.find({ where: { videoName: title } }).then(video => video.destroy());
+const removeFromPlaylist = title => Video.find({ where: { videoName: title } })
+  .then(video => video.destroy());
 
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;

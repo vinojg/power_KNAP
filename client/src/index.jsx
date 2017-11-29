@@ -1,10 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Search from './Search.jsx';
-import RoomList from './RoomList.jsx';
-import Sidebar from './Sidebar.jsx';
-
-const lobby = io('/lobby');
+import RoomList from './components/RoomList';
 
 class App extends React.Component {
   constructor(props) {
@@ -19,14 +15,14 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="room">
         <h1>Fam.ly</h1>
-        <Search />
         <RoomList rooms={this.state.roomList} />
-        <Sidebar />
+
       </div>
     );
   }
 }
 
-// ReactDOM.render(<App />, document.getElementById('homepage'));
+ReactDOM.render(<App />, document.getElementById('app'));
+
