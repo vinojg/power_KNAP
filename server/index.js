@@ -40,6 +40,11 @@ app.get('/renderRoom', (req, res) => {
     .catch(() => res.sendStatus(404));
 });
 
+app.get('/rooms', (req, res) => {
+  db.findRooms()
+    .then(rooms => res.json(rooms));
+});
+
 app.get('/search', (req, res) => {
   youtubeApi.grabVideos(req.query.query)
     .then(searchResults => res.json(searchResults))
