@@ -131,7 +131,7 @@ class RoomView extends React.Component {
         isHost={this.state.isHost}
       />);
     } else {
-      playlistComponent = <Playlist playlist={this.state.playlist} />;
+      playlistComponent = <Playlist playlist={this.state.playlist} removeSelected={this.handleDelete}/>;
     }
 
     return (
