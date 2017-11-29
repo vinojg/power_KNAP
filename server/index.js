@@ -27,9 +27,12 @@ app.use(passport.session());
 app.use('/auth', authRoutes);
 
 // Room HTTP Requests
-app.get('/renderRoom', (req, res) => {
+app.get('/room/:roomId', (req, res) => {
+  let roomId = req.params.roomId;
+
+  // refactor rest of function!
   const roomProperties = {};
-  db.findVideos()
+  db.findVideos() // find by room id!
     .then((videos) => { roomProperties.videos = videos; })
     .then(() => db.getRoomProperties())
     .then(({ indexKey, startTime }) => {

@@ -73,8 +73,11 @@ class App extends React.Component {
       view: view,
     });
     axios.get('/rooms')
-      .then(rooms => this.setState({ roomList: rooms }));
+      .then(({ data }) => this.setState({ roomList: data.rooms }));
   }
+
+
+// note: must somehow pass room id to selected room as prop!!
 
   render() {
     return (

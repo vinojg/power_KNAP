@@ -56,6 +56,7 @@ const createVideoEntry = (videoData) => {
 };
 
 // Room Queries
+const findRooms = () => Room.findAll();
 const getRoomProperties = () => Room.findById(1).then(room => room.dataValues);
 const incrementIndex = () => Room.findById(1).then(room => room.increment('indexKey'));
 const resetRoomIndex = () => Room.findById(1).then(room => room.update({ indexKey: 0 }));
@@ -76,6 +77,7 @@ const saveGoogleUser = function(googleProfile) {
     .catch(err => console.log('Error saving user: ', err));
 };
 
+exports.findRooms = findRooms;
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;
 exports.incrementIndex = incrementIndex;
