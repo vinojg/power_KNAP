@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 import RoomList from './components/RoomList';
 import Modal from 'react-modal';
 import NavBar from './components/NavBar';
@@ -69,8 +70,10 @@ class App extends React.Component {
 
   changeView(view) {
     this.setState({
-      view: view
+      view: view,
     });
+    axios.get('/rooms')
+      .then(rooms => this.setState({ roomList: rooms }));
   }
 
   render() {
