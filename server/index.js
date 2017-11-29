@@ -5,7 +5,7 @@ const db = require('../database/postgres');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 const authRoutes = require('./auth-routes');
-const passportSetup = require('../passport-setup');
+require('../passport-setup');
 
 const app = express();
 const port = process.env.PORT;
@@ -86,7 +86,8 @@ roomSpace.on('connection', (socket) => {
         if (videos.length === 1) db.setStartTime();
       })
       .catch((emptyPlaylist) => {
-        if (Array.isArray(emptyPlaylist)) { // Check if the thrown item is an array rather than an Error
+        // Check if the thrown item is an array rather than an Error
+        if (Array.isArray(emptyPlaylist)) {
           roomSpace.emit('default');
         } else {
           throw emptyPlaylist;
