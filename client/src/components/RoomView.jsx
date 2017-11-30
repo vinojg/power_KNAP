@@ -148,6 +148,7 @@ class RoomView extends React.Component {
           date={this.state.dateTime}
           username={this.state.username}
           emitMessage={this.emitMessage}
+          getUser={this.props.getUser}
         />
       </div>
     );

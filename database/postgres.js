@@ -55,6 +55,7 @@ Room.belongsToMany(Video, { through: RoomVideos });
 // RoomVideos.sync({ force: true });
 
 const createVideoEntry = (videoData, roomId) => {
+  console.log(videoData);
   const videoEntry = {
     videoName: videoData.title,
     creator: videoData.creator,
@@ -64,8 +65,11 @@ const createVideoEntry = (videoData, roomId) => {
   return Video.create(videoEntry)
     .then(video => RoomVideos.create({
       videoId: video.id,
-      roomId: roomId, 
-    })); // returns a promise when called
+      roomId: roomId,
+    }))
+    .catch(err => {
+      console.error(err);
+    }); // returns a promise when called
 };
 
 // Room Queries
@@ -102,7 +106,7 @@ const removeFromPlaylist = (title, roomId) => Video.find({
 const saveGoogleUser = (googleProfile) => {
   return Users.create({
     google_id: googleProfile.id, // eslint-disable-line camelcase
-    google_name: googleProfile.name.givenName, // eslint-disable-line camelcase
+    google_name: googleProfile.displayName, // eslint-disable-line camelcase
     google_avatar: googleProfile.photos[0].value, // eslint-disable-line camelcase
   })
     .catch(err => console.log('Error saving user: ', err));

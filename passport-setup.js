@@ -17,6 +17,7 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLECLIENTID,
   clientSecret: process.env.GOOGLECLIENTSECRET,
 }, (accessToken, refreshToken, profile, done) => {
+  console.log(profile);
   return db.Users.findOne({where: {google_id: profile.id} })
     .then(user => {
       if (user) {
