@@ -15,6 +15,7 @@ const io = require('socket.io').listen(server);
 server.listen(port, () => console.log(`listening on port ${port}`));
 app.use(express.static(`${__dirname}./../client`));
 const roomSpace = io.of('/room');
+
 // const lobbySpace = io.of('/lobby');
 
 app.use(cookieSession({
@@ -28,23 +29,23 @@ app.use('/auth', authRoutes);
 
 // Room HTTP Requests
 app.get('/room/:roomId', (req, res) => {
-  let roomId = Number(req.params.roomId);
-  console.log(req.params);
-  // Now refactor rest of function for multiple rooms!
-
+  const roomId = Number(req.params.roomId);
   const roomProperties = {};
-  db.findVideos() // will find by room id!
-    .then((videos) => { roomProperties.videos = videos; })
-    .then(() => db.getRoomProperties())
+  db.roomVideos.findAll();
+  db.findVideos(/*roomId*/) // we will find by room id!
+    .then((videos) => {
+      roomProperties.videos = videos;
+      return db.getRoomProperties(roomId);
+    })
     .then(({ indexKey, startTime }) => {
       roomProperties.index = indexKey;
       roomProperties.start = startTime;
     })
     .then(() => res.json(roomProperties))
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
       res.sendStatus(404);
-    })
+    });
 });
 
 app.get('/rooms', (req, res) => {
@@ -90,7 +91,7 @@ app.get('/users', (req, res) => {
     });
 });
 
-roomSpace.on('connection', (socket) => {
+roomSpace.on('connection', (socket, roomId) => {
   console.log(`connected to ${Object.keys(socket.nsp.sockets).length} socket(s)`);
   roomSpace.to(socket.id).emit('id', socket.id);
   if (Object.keys(socket.nsp.sockets).length === 1) {
@@ -123,7 +124,7 @@ roomSpace.on('connection', (socket) => {
       url: video.id.videoId,
       description: video.snippet.description,
     };
-    return db.createVideoEntry(videoData)
+    return db.createVideoEntry(videoData, 1) // this 1 needs to be a variable for roomId!!!
       .then(() => sendPlaylist());
   });
 

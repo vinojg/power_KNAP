@@ -41,7 +41,7 @@ const Room = sequelize.define('room', {
 });
 
 // This is a join table to deal with multiple rooms each having videos
-const RoomVideos = sequelize.define('roomVideos', {
+const RoomVideos = sequelize.define('roomvideos', {
   playlistPosition: Sequelize.INTEGER,
   upVotes: Sequelize.INTEGER,
 });
@@ -54,33 +54,34 @@ Room.belongsToMany(Video, { through: RoomVideos });
 // Users.sync({ force: true });
 // RoomVideos.sync({ force: true });
 
-const createVideoEntry = (videoData) => {
+const createVideoEntry = (videoData, roomId) => {
   const videoEntry = {
     videoName: videoData.title,
     creator: videoData.creator,
     url: videoData.url,
     description: videoData.description,
   };
-  return Video.create(videoEntry); // returns a promise when called
+  return Video.create(videoEntry)
+    .then(video => RoomVideos.create({
+      videoId: video.id,
+      roomId: roomId, 
+    })); // returns a promise when called
 };
 
 // Room Queries
 const findRooms = () => Room.findAll();
-const getRoomProperties = (roomId) => Room.findById(1).then(room => room.dataValues);
-const incrementIndex = (roomId) => Room.findById(1).then(room => room.increment('indexKey'));
-const resetRoomIndex = (roomId) => Room.findById(1).then(room => room.update({ indexKey: 0 }));
-const getIndex = (roomId) => Room.findById(1).then(room => room.dataValues.indexKey);
-const setStartTime = (roomId) => Room.findById(1).then(room => room.update({ startTime: Date.now() }));
-
-
-
+const getRoomProperties = roomId => Room.findById(roomId).then(room => room.dataValues);
+const incrementIndex = roomId => Room.findById(roomId).then(room => room.increment('indexKey'));
+const resetRoomIndex = roomId => Room.findById(roomId).then(room => room.update({ indexKey: 0 }));
+const getIndex = roomId => Room.findById(roomId).then(room => room.dataValues.indexKey);
+const setStartTime = roomId => Room.findById(roomId).then(room => room.update({ startTime: Date.now() }));
 
 
 // Video Queries
 // const findVideos = roomId => Video.findAll({ where: { roomId } });
 const findVideos = roomId => Video.findAll();
 
-// not working...
+// not working?
 // const findVideos = roomId => sequelize.query(`
 //   SELECT * FROM "videos" WHERE "id" IN
 //   (SELECT * FROM "roomVideos" WHERE "room"."id" = ?)`,
@@ -110,6 +111,8 @@ const saveGoogleUser = (googleProfile) => {
 const findUser = (user) => Users.findAll({ where: { google_name: user } });
 
 exports.findUser = findUser;
+exports.roomVideos = RoomVideos;
+
 exports.findRooms = findRooms;
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;
