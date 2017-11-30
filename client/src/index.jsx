@@ -27,7 +27,8 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      roomList: ['Room1', 'Room2', 'Room3'],
+      roomList: [1, 2, 3],
+      roomBeingViewed: 1,
       modalIsOpen: false,
       view: 'home',
     };
@@ -64,7 +65,7 @@ class App extends React.Component {
     if (view === 'home') {
       return <Home openModal={this.openModal} />;
     } else {
-      return <RoomView />;
+      return <RoomView roomId={this.state.roomBeingViewed}/>;
     }
   }
 
@@ -72,12 +73,12 @@ class App extends React.Component {
     this.setState({
       view: view,
     });
-    axios.get('/rooms')
-      .then(({ data }) => this.setState({ roomList: data.rooms }));
+    // axios.get('/rooms')
+    //   .then(({ data }) => this.setState({ roomList: data.rooms }));
   }
 
 
-// note: must somehow pass room id to selected room as prop!!
+  // note: must somehow pass room id to selected room as prop!!
 
   render() {
     return (
