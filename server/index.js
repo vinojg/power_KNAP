@@ -74,7 +74,8 @@ app.patch('/playNext/:length', (req, res) => {
   db.getIndex()
     .then(currentSongIndex => queueNextVideo(roomPlaylistLength, currentSongIndex))
     .then(room => sendIndex(room.dataValues))
-    .then(() => db.setStartTime())
+    // Update this 1 to roomId after this route has access
+    .then(() => db.setStartTime(1))
     .then(() => res.end())
     .catch(err => res.send(err));
 });
@@ -98,6 +99,10 @@ roomSpace.on('connection', (socket, roomId) => {
     roomHost = socket.id;
     giveHostStatus(roomHost);
   }
+
+  console.log('DOES SERVER ROOM ID exists?!', roomId);
+  roomId ? console.log('ROOM ID exists from socket connection:', roomId) : roomId = 1;
+  console.log('ROOM ID after ternary:', roomId);
 
   const sendPlaylist = (roomId) => (
     db.findVideos(roomId)
@@ -125,12 +130,12 @@ roomSpace.on('connection', (socket, roomId) => {
       description: video.snippet.description,
     };
     return db.createVideoEntry(videoData, 1) // this 1 needs to be a variable for roomId!!!
-      .then(() => sendPlaylist());
+      .then(() => sendPlaylist(roomId));
   });
 
   socket.on('removeFromPlaylist', (videoName) => {
     db.removeFromPlaylist(videoName)
-      .then(() => sendPlaylist())
+      .then(() => sendPlaylist(roomId))
       .catch(err => roomSpace.emit('error', err));
   });
 
