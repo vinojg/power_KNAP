@@ -20,7 +20,9 @@ class NavBar extends React.Component {
     const view = this.state.user ?
       <span>
         <a className="nav-link" onClick={ () => this.props.getUser(this.state.user) }>{this.state.user}</a>
-        <a className="nav-link" href="/auth/logout">Logout</a></span> :
+        <a className="nav-link" href="/auth/logout">Logout</a>
+
+      </span> :
       <span className="nav-link"><a href="/auth/google">Login</a></span>;
 
     return (
