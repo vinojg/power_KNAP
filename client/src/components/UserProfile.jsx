@@ -7,9 +7,17 @@ class UserProfile extends React.Component {
 
   render() {
     return (
-      <div>
-        { this.props.user.google_name }
-      </div>
+      <main role="main">
+        <div className="starter-template">
+          <section className="jumbotron text-center">
+            <div className="container">
+              <p><img className="img-thumbnail" src={ this.props.user.google_avatar }></img></p>
+              <h1 className="jumbotron-heading">{ this.props.user.google_name }</h1>
+            </div>
+          </section>
+        </div>
+
+      </main>
     );
   }
 }

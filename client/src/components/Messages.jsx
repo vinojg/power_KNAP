@@ -11,7 +11,7 @@ const Messages = ({ messages, getUser }) => (
         <span
           className="username"
           style={spanStyle}
-          onClick={() => message.username !== 'Anonymous' ? getUser(message.username) : console.log('nonono')} > {message.username}:</span> {message.message}
+          onClick={ () => message.username !== 'Anonymous' ? getUser(message.username) : console.log('nonono') } > {message.username}:</span> {message.message}
       </div>
     );
   }));

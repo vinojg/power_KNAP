@@ -47,8 +47,6 @@ class App extends React.Component {
     this.setState({
       view: 'home'
     });
-
-    this.getUser('Rithnarin');
   }
 
   getUser(user) {
@@ -57,6 +55,9 @@ class App extends React.Component {
       .then(user => this.setState({
         user: user,
       }))
+      .then(() => {
+        this.changeView('user');
+      })
       .catch(err => console.error(err));
   }
 
@@ -101,7 +102,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <NavBar />
+        <NavBar getUser={this.getUser} />
         { this.renderView() }
 
         <Modal
