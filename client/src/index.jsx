@@ -47,6 +47,7 @@ class App extends React.Component {
     this.setState({
       view: 'home'
     });
+  };
 
   getUser(user) {
     fetch(`/users?user=${user}`)
