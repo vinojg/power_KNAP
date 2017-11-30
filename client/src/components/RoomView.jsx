@@ -103,8 +103,11 @@ class RoomView extends React.Component {
   }
 
   renderRoom() {
+    console.log('Render room called. Room id was: ', this.props.roomId);
     return axios.get(`/room/${this.props.roomId}`)
       .then(({ data }) => {
+        console.log('Room id was: ', this.props.roomId);
+        console.log('Room data is: ', data);
         const currentTime = Date.now();
         const timeLapsed = moment.duration(moment(currentTime).diff(data.start)).asSeconds();
         this.setState({
