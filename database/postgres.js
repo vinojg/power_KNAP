@@ -65,7 +65,8 @@ const createVideoEntry = (videoData, roomId) => {
     .then(video => RoomVideos.create({
       videoId: video.id,
       roomId: roomId, 
-    })); // returns a promise when called
+    })) // returns a promise when called
+    .catch(err => console.log('Error creating RoomVideos: ', err));
 };
 
 // Room Queries

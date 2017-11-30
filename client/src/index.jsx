@@ -47,7 +47,7 @@ class App extends React.Component {
       view: 'home'
     });
 
-    this.getUser('Rithnarin');
+    // this.getUser('Rithnarin');
   }
 
   getUser(user) {
