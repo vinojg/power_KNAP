@@ -7,7 +7,11 @@ class UserProfile extends React.Component {
 
   render() {
     return (
-
+      <div>
+        { this.props.user.google_name }
+      </div>
     );
   }
 }
+
+export default UserProfile;

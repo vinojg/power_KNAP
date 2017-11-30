@@ -82,7 +82,7 @@ const findVideos = roomId => Video.findAll();
 
 // not working...
 // const findVideos = roomId => sequelize.query(`
-//   SELECT * FROM "videos" WHERE "id" IN 
+//   SELECT * FROM "videos" WHERE "id" IN
 //   (SELECT * FROM "roomVideos" WHERE "room"."id" = ?)`,
 //   { replacements: [roomId], type: sequelize.QueryTypes.SELECT });
 
@@ -98,7 +98,7 @@ const removeFromPlaylist = (title, roomId) => Video.find({
   .then(video => video.destroy());
 
 
-const saveGoogleUser = function(googleProfile) {
+const saveGoogleUser = (googleProfile) => {
   return Users.create({
     google_id: googleProfile.id, // eslint-disable-line camelcase
     google_name: googleProfile.name.givenName, // eslint-disable-line camelcase
@@ -107,6 +107,9 @@ const saveGoogleUser = function(googleProfile) {
     .catch(err => console.log('Error saving user: ', err));
 };
 
+const findUser = (user) => Users.findAll({ where: { google_name: user } });
+
+exports.findUser = findUser;
 exports.findRooms = findRooms;
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;

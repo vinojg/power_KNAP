@@ -1,7 +1,7 @@
 import React from 'react';
 
 const RoomListEntry = (props) => (
-  <li onClick={() => props.changeView('post')}>
+  <li onClick={() => props.changeView('room')}>
     {props.room}
   </li>
 );
