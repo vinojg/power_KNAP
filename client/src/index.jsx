@@ -8,6 +8,7 @@ import Messages from './components/Messages';
 import RoomView from './components/RoomView';
 import Home from './components/Home';
 import RoomListEntry from './components/RoomListEntry';
+import UserProfile from './components/UserProfile';
 
 const customStyles = {
   content : {
@@ -31,6 +32,7 @@ class App extends React.Component {
       roomBeingViewed: 1,
       modalIsOpen: false,
       view: 'home',
+      user: {},
     };
 
     this.openModal = this.openModal.bind(this);
@@ -44,6 +46,17 @@ class App extends React.Component {
     this.setState({
       view: 'home'
     });
+
+    this.getUser('Rithnarin');
+  }
+
+  getUser(user) {
+    fetch(`/users?user=${user}`)
+      .then(response => response.json())
+      .then(user => this.setState({
+        user: user,
+      }))
+      .catch(err => console.error(err));
   }
 
   openModal() {
@@ -64,8 +77,10 @@ class App extends React.Component {
 
     if (view === 'home') {
       return <Home openModal={this.openModal} />;
-    } else {
+    } else if (view === 'room') {
       return <RoomView roomId={this.state.roomBeingViewed}/>;
+    } else if (view === 'user') {
+      return <UserProfile user={this.state.user} />;
     }
   }
 

@@ -23,7 +23,6 @@ class NavBar extends React.Component {
 
     return (
         <header>
-
           <div className="navbar navbar-dark bg-dark">
             <div className="container d-flex justify-content-between">
               <a href="/" className="navbar-brand">fam.ly</a>

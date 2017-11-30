@@ -82,6 +82,14 @@ app.patch('/playNext/:length', (req, res) => {
 let roomHost;
 const giveHostStatus = host => roomSpace.to(host).emit('host');
 
+// Get users
+app.get('/users', (req, res) => {
+  db.findUser(req.query.user)
+    .then(data => {
+      res.send(data[0].dataValues);
+    });
+});
+
 roomSpace.on('connection', (socket) => {
   console.log(`connected to ${Object.keys(socket.nsp.sockets).length} socket(s)`);
   roomSpace.to(socket.id).emit('id', socket.id);
