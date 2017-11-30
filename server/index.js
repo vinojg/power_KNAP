@@ -92,8 +92,18 @@ app.get('/users', (req, res) => {
     });
 });
 
-roomSpace.on('connection', (socket, roomId) => {
+roomSpace.on('connection', (socket) => {
   console.log(`connected to ${Object.keys(socket.nsp.sockets).length} socket(s)`);
+
+  var roomId;
+
+  // once a client has connected, we expect to get a ping from them saying what room they want to join
+  socket.on('room', function(room) {
+    console.log('Client emitted room: ', room);
+    socket.join(room);
+    roomId = room;
+  });
+
   roomSpace.to(socket.id).emit('id', socket.id);
   if (Object.keys(socket.nsp.sockets).length === 1) {
     roomHost = socket.id;
@@ -104,7 +114,7 @@ roomSpace.on('connection', (socket, roomId) => {
   roomId ? console.log('ROOM ID exists from socket connection:', roomId) : roomId = 1;
   console.log('ROOM ID after ternary:', roomId);
 
-  const sendPlaylist = (roomId) => (
+  const sendPlaylist = () => (
     db.findVideos(roomId)
       .then((videos) => {
         roomSpace.emit('retrievePlaylist', videos);
@@ -129,7 +139,8 @@ roomSpace.on('connection', (socket, roomId) => {
       url: video.id.videoId,
       description: video.snippet.description,
     };
-    return db.createVideoEntry(videoData, 1) // this 1 needs to be a variable for roomId!!!
+
+    return db.createVideoEntry(videoData, roomId)
       .then(() => sendPlaylist(roomId));
   });
 
@@ -148,6 +159,13 @@ roomSpace.on('connection', (socket, roomId) => {
     // const colors = ['#ffb3ba', '#ffd2b3', '#fff8b3', '#baffb3', '#bae1ff', '#e8baff'];
     // const userColor = colors[(sum % colors.length)];
     // message.userColor = userColor;
+    var roomStatusMessage = {
+      body: 'Welcome to room ' + roomId,
+      userName: 'socket.io bot',
+      dateTime: Date.now(),
+    }
+    console.log(roomId);
+    roomSpace.to(roomId).emit('pushingMessage', roomStatusMessage);
     roomSpace.emit('pushingMessage', message);
   });
 
