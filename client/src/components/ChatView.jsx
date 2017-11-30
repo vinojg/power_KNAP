@@ -48,7 +48,10 @@ class ChatView extends React.Component {
 
 ChatView.propTypes = {
   emitMessage: PropTypes.func.isRequired,
-  message: PropTypes.string.isRequired,
+  message: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]).isRequired,
 };
 
 export default ChatView;

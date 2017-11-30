@@ -27,9 +27,13 @@ app.use(passport.session());
 app.use('/auth', authRoutes);
 
 // Room HTTP Requests
-app.get('/renderRoom', (req, res) => {
+app.get('/room/:roomId', (req, res) => {
+  let roomId = Number(req.params.roomId);
+  console.log(req.params);
+  // Now refactor rest of function for multiple rooms!
+
   const roomProperties = {};
-  db.findVideos()
+  db.findVideos() // will find by room id!
     .then((videos) => { roomProperties.videos = videos; })
     .then(() => db.getRoomProperties())
     .then(({ indexKey, startTime }) => {
@@ -37,7 +41,15 @@ app.get('/renderRoom', (req, res) => {
       roomProperties.start = startTime;
     })
     .then(() => res.json(roomProperties))
-    .catch(() => res.sendStatus(404));
+    .catch(err => {
+      console.error(err);
+      res.sendStatus(404);
+    })
+});
+
+app.get('/rooms', (req, res) => {
+  db.findRooms()
+    .then(rooms => res.json(rooms));
 });
 
 app.get('/search', (req, res) => {
@@ -78,12 +90,12 @@ roomSpace.on('connection', (socket) => {
     giveHostStatus(roomHost);
   }
 
-  const sendPlaylist = () => (
-    db.findVideos()
+  const sendPlaylist = (roomId) => (
+    db.findVideos(roomId)
       .then((videos) => {
         roomSpace.emit('retrievePlaylist', videos);
         if (videos.length === 0) throw videos;
-        if (videos.length >= 1) db.setStartTime();
+        if (videos.length >= 1) db.setStartTime(roomId);
       })
       .catch((emptyPlaylist) => {
         // Check if the thrown item is an array rather than an Error

@@ -30,9 +30,9 @@ const Video = sequelize.define('video', {
 });
 
 /* not used?? */
-const Playlist = sequelize.define('playlist', {
-  playlistName: Sequelize.STRING,
-});
+// const Playlist = sequelize.define('playlist', {
+//   playlistName: Sequelize.STRING,
+// });
 
 // TODO we will need to refer to the Room ID when there are multiple room instances
 const Room = sequelize.define('room', {
@@ -40,10 +40,19 @@ const Room = sequelize.define('room', {
   startTime: Sequelize.DATE,
 });
 
+// This is a join table to deal with multiple rooms each having videos
+const RoomVideos = sequelize.define('roomVideos', {
+  playlistPosition: Sequelize.INTEGER,
+  upVotes: Sequelize.INTEGER,
+});
+Video.belongsToMany(Room, { through: RoomVideos });
+Room.belongsToMany(Video, { through: RoomVideos });
+
 // uncomment this first time running, then comment
-Video.sync({ force: true })
-Room.sync({ force: true })
-Users.sync({ force: true })
+// Video.sync({ force: true });
+// Room.sync({ force: true });
+// Users.sync({ force: true });
+// RoomVideos.sync({ force: true });
 
 const createVideoEntry = (videoData) => {
   const videoEntry = {
@@ -56,26 +65,49 @@ const createVideoEntry = (videoData) => {
 };
 
 // Room Queries
-const getRoomProperties = () => Room.findById(1).then(room => room.dataValues);
-const incrementIndex = () => Room.findById(1).then(room => room.increment('indexKey'));
-const resetRoomIndex = () => Room.findById(1).then(room => room.update({ indexKey: 0 }));
-const getIndex = () => Room.findById(1).then(room => room.dataValues.indexKey);
-const setStartTime = () => Room.findById(1).then(room => room.update({ startTime: Date.now() }));
+const findRooms = () => Room.findAll();
+const getRoomProperties = (roomId) => Room.findById(1).then(room => room.dataValues);
+const incrementIndex = (roomId) => Room.findById(1).then(room => room.increment('indexKey'));
+const resetRoomIndex = (roomId) => Room.findById(1).then(room => room.update({ indexKey: 0 }));
+const getIndex = (roomId) => Room.findById(1).then(room => room.dataValues.indexKey);
+const setStartTime = (roomId) => Room.findById(1).then(room => room.update({ startTime: Date.now() }));
+
+
+
+
 
 // Video Queries
-const findVideos = () => Video.findAll();
-const removeFromPlaylist = title => Video.find({ where: { videoName: title } })
+// const findVideos = roomId => Video.findAll({ where: { roomId } });
+const findVideos = roomId => Video.findAll();
+
+// not working...
+// const findVideos = roomId => sequelize.query(`
+//   SELECT * FROM "videos" WHERE "id" IN 
+//   (SELECT * FROM "roomVideos" WHERE "room"."id" = ?)`,
+//   { replacements: [roomId], type: sequelize.QueryTypes.SELECT });
+
+// not working...
+// const removeFromPlaylist = (title, roomId) => RoomVideos.find({
+//   where: { roomId, videoName: title },
+// })
+//   .then(roomVideo => roomVideo.destroy());
+
+const removeFromPlaylist = (title, roomId) => Video.find({
+  where: { videoName: title },
+})
   .then(video => video.destroy());
+
 
 const saveGoogleUser = function(googleProfile) {
   return Users.create({
     google_id: googleProfile.id, // eslint-disable-line camelcase
     google_name: googleProfile.name.givenName, // eslint-disable-line camelcase
-    google_avatar: googleProfile.photos[0].value // eslint-disable-line camelcase
+    google_avatar: googleProfile.photos[0].value, // eslint-disable-line camelcase
   })
     .catch(err => console.log('Error saving user: ', err));
 };
 
+exports.findRooms = findRooms;
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;
 exports.incrementIndex = incrementIndex;

@@ -4,7 +4,11 @@ import RoomListEntry from './RoomListEntry';
 
 const RoomList = ({rooms, changeView}) => (
   <ul>
-    {rooms.map((room, index) => <RoomListEntry room={room} key={index} changeView={changeView} />)}
+    {rooms.map((room, index) => <RoomListEntry
+        room={room}
+        key={index}
+        changeView={changeView}
+      />)}
   </ul>
 );
 
@@ -12,6 +16,6 @@ export default RoomList;
 
 
 RoomList.propTypes = {
-  rooms: PropTypes.arrayOf(PropTypes.string).isRequired,
+  rooms: PropTypes.arrayOf(PropTypes.number).isRequired,
   changeView: PropTypes.func.isRequired,
 };

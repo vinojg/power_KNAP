@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Messages = ({ messages }) => (
-  messages.map((message) => {
+  messages.map((message, index) => {
     const spanStyle = { color: message.color };
     return (
-      <div>
+      <div key={index}>
         <span className="dateTime">[{message.date}]</span>
         <span className="username" style={spanStyle}> {message.username}:</span> {message.message}
       </div>
@@ -13,7 +13,7 @@ const Messages = ({ messages }) => (
   }));
 
 Messages.propTypes = {
-  messages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  messages: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default Messages;

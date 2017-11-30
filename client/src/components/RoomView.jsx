@@ -9,6 +9,7 @@ import VideoPlayer from './VideoPlayer';
 import Playlist from './Playlist';
 import Search from './Search';
 import ChatView from './ChatView';
+import PropTypes from 'prop-types';
 
 const roomSocket = io('/room');
 
@@ -25,14 +26,21 @@ class RoomView extends React.Component {
       // TODO: eliminate the need for two separate username references
     };
 
+
+    this.handleDelete = videoName => roomSocket.emit('removeFromPlaylist', videoName);
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
-    this.onPlayerReady = this.onPlayerReady.bind(this);
-    this.addToPlaylist = this.addToPlaylist.bind(this);
-    this.saveToPlaylist = this.saveToPlaylist.bind(this);
     this.emitMessage = this.emitMessage.bind(this);
+    this.addToPlaylist = this.addToPlaylist.bind(this);
+    this.onPlayerReady = e => e.target.playVideo();
+    this.onPlayerReady = this.onPlayerReady.bind(this);
+    this.saveToPlaylist = video => roomSocket.emit('saveToPlaylist', video);
+    this.saveToPlaylist = this.saveToPlaylist.bind(this);
   }
 
   componentDidMount() {
+    if (cookie.parse(document.cookie).user) {
+      this.setState({ user: cookie.parse(document.cookie).user });
+    }
     this.renderRoom();
     roomSocket.on('default', () => this.setState({ currentVideo: undefined }));
     roomSocket.on('host', () => this.setState({ isHost: true }));
@@ -58,10 +66,6 @@ class RoomView extends React.Component {
     roomSocket.disconnect();
   }
 
-  onPlayerReady(e) {
-    e.target.playVideo();
-  }
-
   onPlayerStateChange(e) {
     // when video has ended
     if (e.data === 0) {
@@ -78,10 +82,6 @@ class RoomView extends React.Component {
     }
   }
 
-  handleDelete(videoName) {
-    roomSocket.emit('removeFromPlaylist', videoName);
-  }
-
   addToPlaylist(videos) {
     if (videos.length === 1) {
       this.setState({
@@ -94,10 +94,6 @@ class RoomView extends React.Component {
     }
   }
 
-  saveToPlaylist(video) {
-    roomSocket.emit('saveToPlaylist', video);
-  }
-
   emitMessage(time, message) {
     roomSocket.emit('emitMessage', {
       body: message,
@@ -107,8 +103,11 @@ class RoomView extends React.Component {
   }
 
   renderRoom() {
-    return axios.get('/renderRoom')
+    console.log('Render room called. Room id was: ', this.props.roomId);
+    return axios.get(`/room/${this.props.roomId}`)
       .then(({ data }) => {
+        console.log('Room id was: ', this.props.roomId);
+        console.log('Room data is: ', data);
         const currentTime = Date.now();
         const timeLapsed = moment.duration(moment(currentTime).diff(data.start)).asSeconds();
         this.setState({
@@ -156,4 +155,8 @@ class RoomView extends React.Component {
 }
 
 export default RoomView;
+RoomView.propTypes = {
+  roomId: PropTypes.number.isRequired,
+};
+
 // ReactDOM.render(<RoomView />, document.getElementById('room'));

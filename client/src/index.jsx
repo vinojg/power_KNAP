@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 import RoomList from './components/RoomList';
 import Modal from 'react-modal';
 import NavBar from './components/NavBar';
@@ -26,7 +27,8 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      roomList: ['Room1', 'Room2', 'Room3'],
+      roomList: [1, 2, 3],
+      roomBeingViewed: 1,
       modalIsOpen: false,
       view: 'home',
     };
@@ -63,15 +65,20 @@ class App extends React.Component {
     if (view === 'home') {
       return <Home openModal={this.openModal} />;
     } else {
-      return <RoomView />;
+      return <RoomView roomId={this.state.roomBeingViewed}/>;
     }
   }
 
   changeView(view) {
     this.setState({
-      view: view
+      view: view,
     });
+    // axios.get('/rooms')
+    //   .then(({ data }) => this.setState({ roomList: data.rooms }));
   }
+
+
+  // note: must somehow pass room id to selected room as prop!!
 
   render() {
     return (
