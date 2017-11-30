@@ -123,15 +123,12 @@ class RoomView extends React.Component {
 
   render() {
     let playlistComponent;
-    if (this.state.isHost) {
-      playlistComponent = (<Playlist
+    playlistComponent = (<Playlist
         playlist={this.state.playlist}
         removeSelected={this.handleDelete}
         isHost={this.state.isHost}
+        removeVideoFromPlaylist={this.state.isHost ? this.handleDelete : undefined}
       />);
-    } else {
-      playlistComponent = <Playlist playlist={this.state.playlist} removeSelected={this.handleDelete}/>;
-    }
 
     return (
       <div className="room">

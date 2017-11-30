@@ -10,9 +10,18 @@ const PlaylistEntry = ({ song, index, isHost, removeSelected }) => {
           Remove
           </button>
 
-        <button className="voteButton"  onClick={() => { console.log('upVote') }}>
+        <button className="voteButton"  onClick={() => { 
+
+          console.log('upVote') 
+          
+          }}>
           +1
         </button>
+        {isHost &&
+        <button className="deleteButton" >
+          Remove for Host
+          </button>
+      }
         <div className="songTitle">{index}. {song.videoName} </div>
       </div>
     );
