@@ -40,6 +40,7 @@ class App extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.renderView = this.renderView.bind(this);
     this.changeView = this.changeView.bind(this);
+    this.getUser = this.getUser.bind(this);
   }
 
   componentDidMount() {
@@ -78,7 +79,9 @@ class App extends React.Component {
     if (view === 'home') {
       return <Home openModal={this.openModal} />;
     } else if (view === 'room') {
-      return <RoomView roomId={this.state.roomBeingViewed}/>;
+      return <RoomView
+        roomId={this.state.roomBeingViewed}
+        getUser={this.getUser} />;
     } else if (view === 'user') {
       return <UserProfile user={this.state.user} />;
     }

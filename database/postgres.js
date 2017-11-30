@@ -101,7 +101,7 @@ const removeFromPlaylist = (title, roomId) => Video.find({
 const saveGoogleUser = (googleProfile) => {
   return Users.create({
     google_id: googleProfile.id, // eslint-disable-line camelcase
-    google_name: googleProfile.name.givenName, // eslint-disable-line camelcase
+    google_name: googleProfile.displayName, // eslint-disable-line camelcase
     google_avatar: googleProfile.photos[0].value, // eslint-disable-line camelcase
   })
     .catch(err => console.log('Error saving user: ', err));
