@@ -38,12 +38,16 @@ const Video = sequelize.define('video', {
 const Room = sequelize.define('room', {
   indexKey: Sequelize.INTEGER,
   startTime: Sequelize.DATE,
+
 });
 
 // This is a join table to deal with multiple rooms each having videos
 const RoomVideos = sequelize.define('roomvideos', {
   playlistPosition: Sequelize.INTEGER,
-  upVotes: Sequelize.INTEGER,
+  upVotes: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0
+  }
 });
 Video.belongsToMany(Room, { through: RoomVideos });
 Room.belongsToMany(Video, { through: RoomVideos });
@@ -62,10 +66,13 @@ const createVideoEntry = (videoData, roomId) => {
     description: videoData.description,
   };
   return Video.create(videoEntry)
-    .then(video => RoomVideos.create({
+    .then(video => {
+      RoomVideos.create({
       videoId: video.id,
       roomId: roomId, 
-    })) // returns a promise when called
+    })
+      console.log('DONE CREATING ROOMVIDEOS');
+    }) // returns a promise when called
     .catch(err => console.log('Error creating RoomVideos: ', err));
 };
 
@@ -75,7 +82,10 @@ const getRoomProperties = roomId => Room.findById(roomId).then(room => room.data
 const incrementIndex = roomId => Room.findById(roomId).then(room => room.increment('indexKey'));
 const resetRoomIndex = roomId => Room.findById(roomId).then(room => room.update({ indexKey: 0 }));
 const getIndex = roomId => Room.findById(roomId).then(room => room.dataValues.indexKey);
-const setStartTime = roomId => Room.findById(roomId).then(room => room.update({ startTime: Date.now() }));
+const setStartTime = roomId => Room.findById(roomId).then(room => {
+  room.update({ startTime: Date.now() })
+}
+  );
 
 
 // Video Queries
