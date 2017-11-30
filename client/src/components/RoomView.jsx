@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 
 const roomSocket = io('/room');
 
+
 class RoomView extends React.Component {
   constructor(props) {
     super(props);
@@ -25,7 +26,6 @@ class RoomView extends React.Component {
       username: 'Anonymous', // refers to socketIDs when user is in chat but not logged in
       // TODO: eliminate the need for two separate username references
     };
-
 
     this.handleDelete = videoName => roomSocket.emit('removeFromPlaylist', videoName);
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
@@ -42,6 +42,8 @@ class RoomView extends React.Component {
       this.setState({ user: cookie.parse(document.cookie).user });
     }
     this.renderRoom();
+    // emit room so server will join us to that socket-room
+    roomSocket.emit('room', this.props.roomId);
     roomSocket.on('default', () => this.setState({ currentVideo: undefined }));
     roomSocket.on('host', () => this.setState({ isHost: true }));
     roomSocket.on('retrievePlaylist', videos => this.addToPlaylist(videos));
@@ -52,6 +54,7 @@ class RoomView extends React.Component {
     });
     roomSocket.on('error', err => console.error(err));
     roomSocket.on('pushingMessage', (message) => {
+      console.log('Received pushingMessage: ', message);
       this.setState({
         message,
       });
