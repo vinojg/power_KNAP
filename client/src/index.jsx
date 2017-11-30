@@ -44,7 +44,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.setState({
-      view: 'user'
+      view: 'home'
     });
 
     this.getUser('Rithnarin');
