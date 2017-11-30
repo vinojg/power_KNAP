@@ -35,7 +35,9 @@ class ChatView extends React.Component {
         <h3>Chat Box</h3>
         <div className="scroll">
           <div className="messageContainer">
-            <Messages messages={this.state.messages} />
+            <Messages
+              messages={this.state.messages}
+              getUser={this.props.getUser} />
           </div>
           <div className="messageInput">
             <MessageInput sendMessage={this.sendMessage} />
