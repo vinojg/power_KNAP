@@ -8,6 +8,7 @@ class ChatView extends React.Component {
     super(props);
     this.state = {
       messages: [],
+      color: '',
     };
     this.sendMessage = this.sendMessage.bind(this);
   }
@@ -29,6 +30,15 @@ class ChatView extends React.Component {
     this.props.emitMessage(time, message);
   }
 
+  getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   render() {
     return (
       <div className="container userChat">
@@ -37,7 +47,9 @@ class ChatView extends React.Component {
           <div className="messageContainer">
             <Messages
               messages={this.state.messages}
-              getUser={this.props.getUser} />
+              getUser={this.props.getUser}
+              getRandomColor={this.getRandomColor}
+              color={this.color} />
           </div>
           <div className="messageInput">
             <MessageInput sendMessage={this.sendMessage} />
