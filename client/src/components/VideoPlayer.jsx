@@ -7,7 +7,7 @@ const VideoPlayer = ({ currentVideo, opts, onReady, onStateChange }) => {
     return (
       <div className="container videoplayer">
         <YouTube
-          className="videoFrame" // TODO uncomment to restrict player controls
+          //className="videoFrame" // TODO uncomment to restrict player controls
           videoId={currentVideo.url}
           onReady={onReady}
           opts={opts}

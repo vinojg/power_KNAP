@@ -29,11 +29,10 @@ class App extends React.Component {
 
     this.state = {
       roomList: [{}],
-      roomBeingViewed: 1,
       modalIsOpen: false,
       view: 'home',
       user: {},
-      roomId: 0,
+      roomId: 1,
     };
 
     this.openModal = this.openModal.bind(this);
@@ -66,7 +65,7 @@ class App extends React.Component {
   }
 
   openModal() {
-    this.setState({modalIsOpen: true});
+    this.setState({ modalIsOpen: true });
   }
 
   afterOpenModal() {
@@ -75,17 +74,17 @@ class App extends React.Component {
   }
 
   closeModal() {
-    this.setState({modalIsOpen: false});
+    this.setState({ modalIsOpen: false });
   }
 
   renderView() {
-    const {view} = this.state;
+    const { view } = this.state;
 
     if (view === 'home') {
       return <Home openModal={this.openModal} />;
     } else if (view === 'room') {
       return <RoomView
-        roomId={this.state.roomBeingViewed}
+        roomId={this.state.roomId}
         getUser={this.getUser} />;
     } else if (view === 'user') {
       return <UserProfile user={this.state.user} />;
@@ -118,7 +117,7 @@ class App extends React.Component {
 
   setRoomId(id) {
     this.setState({
-      roomId: id
+      roomId: id,
     });
   }
 

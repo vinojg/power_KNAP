@@ -46,8 +46,8 @@ const RoomVideos = sequelize.define('roomvideos', {
   playlistPosition: Sequelize.INTEGER,
   upVotes: {
     type: Sequelize.INTEGER,
-    defaultValue: 0
-  }
+    defaultValue: 0,
+  },
 });
 Video.belongsToMany(Room, { through: RoomVideos });
 Room.belongsToMany(Video, { through: RoomVideos });
@@ -57,7 +57,6 @@ Room.belongsToMany(Video, { through: RoomVideos });
 // Room.sync({ force: true });
 // Users.sync({ force: true });
 // RoomVideos.sync({ force: true });
-
 
 // Seed room table to avoid errors
 Room.findOrCreate({ where: { id: 1 } })
@@ -71,68 +70,80 @@ const createVideoEntry = (videoData, roomId) => {
     url: videoData.url,
     description: videoData.description,
   };
-  return Video.create(videoEntry)
-    .then(video => {
+  return Video.findOrCreate({ where: { url: videoData.url }, defaults: videoEntry })
+    .spread((video) => {
       RoomVideos.create({
-      videoId: video.id,
-
-      roomId: roomId,
-
-    })
+        videoId: video.id,
+        roomId,
+      });
       console.log('DONE CREATING ROOMVIDEOS');
     }) // returns a promise when called
     .catch(err => console.log('Error creating RoomVideos: ', err));
-
 };
 
 // Room Queries
 const findRooms = () => Room.findAll();
-const getRoomProperties = roomId => Room.findById(roomId).then(room => room.dataValues);
-const incrementIndex = roomId => Room.findById(roomId).then(room => room.increment('indexKey'));
-const resetRoomIndex = roomId => Room.findById(roomId).then(room => room.update({ indexKey: 0 }));
-const getIndex = roomId => Room.findById(roomId).then(room => room.dataValues.indexKey);
-const setStartTime = roomId => Room.findById(roomId).then(room => {
-  room.update({ startTime: Date.now() })
-}
-  );
+
+const getRoomProperties = roomId => Room.findById(roomId)
+  .then(room => room.dataValues);
+
+// used to play next video in queue - see queueNextVideo in index.js
+const incrementIndex = roomId => Room.findById(roomId)
+  .then(room => room.increment('indexKey'));
+
+// used to play next video in queue - see queueNextVideo in index.js
+const resetRoomIndex = roomId => Room.findById(roomId)
+  .then(room => room.update({ indexKey: 0 }));
+
+const getIndex = (roomId) => {
+  console.log('getIndex request. roomId is: ', roomId);
+  return Room.findById(roomId)
+    .then((room) => {
+      console.log('room.indexKey is: ', room.indexKey);
+      return room.indexKey;
+    });
+};
+
+const setStartTime = roomId => Room.findById(roomId)
+  .then(room => (
+    room.update({
+      startTime: Date.now(),
+    })
+  ));
 
 
 // Video Queries
-// const findVideos = roomId => Video.findAll({ where: { roomId } });
-const findVideos = roomId => Video.findAll();
+const findVideos = () => Video.findAll();
 
-// not working?
-// const findVideos = roomId => sequelize.query(`
-//   SELECT * FROM "videos" WHERE "id" IN
-//   (SELECT * FROM "roomVideos" WHERE "room"."id" = ?)`,
-//   { replacements: [roomId], type: sequelize.QueryTypes.SELECT });
+const getRoomVideos = roomId => Room.findById(roomId)
+  .then(room => room.getVideos());
 
-// not working...
-// const removeFromPlaylist = (title, roomId) => RoomVideos.find({
-//   where: { roomId, videoName: title },
-// })
-//   .then(roomVideo => roomVideo.destroy());
-
-const removeFromPlaylist = (title, roomId) => Video.find({
-  where: { videoName: title },
-})
-  .then(video => video.destroy());
-
-
-const saveGoogleUser = (googleProfile) => {
-  return Users.create({
-    google_id: googleProfile.id, // eslint-disable-line camelcase
-    google_name: googleProfile.displayName, // eslint-disable-line camelcase
-    google_avatar: googleProfile.photos[0].value, // eslint-disable-line camelcase
-  })
-    .catch(err => console.log('Error saving user: ', err));
+const removeFromPlaylist = (title, roomId) => {
+  let room;
+  return Room.findById(roomId)
+    .then((roomFound) => {
+      room = roomFound;
+      return Video.find({ where: { videoName: title } });
+    })
+    .then(video => room.removeVideo(video)) // removeVideo is from sequelize
+    .catch(err => console.log('Error removing video: ', err));
 };
 
-const findUser = (user) => Users.findAll({ where: { google_name: user } });
+const findUser = user => Users.findAll({ where: { google_name: user } });
 
+const saveGoogleUser = googleProfile => (
+  Users.create({
+    google_id: googleProfile.id,
+    google_name: googleProfile.displayName,
+    google_avatar: googleProfile.photos[0].value,
+  })
+    .catch(err => console.log('Error saving user: ', err))
+);
+
+exports.Room = Room;
 exports.findUser = findUser;
 exports.roomVideos = RoomVideos;
-
+exports.getRoomVideos = getRoomVideos;
 exports.findRooms = findRooms;
 exports.createVideoEntry = createVideoEntry;
 exports.getRoomProperties = getRoomProperties;
