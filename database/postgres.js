@@ -58,6 +58,11 @@ Room.belongsToMany(Video, { through: RoomVideos });
 // Users.sync({ force: true });
 // RoomVideos.sync({ force: true });
 
+
+// Seed room table to avoid errors
+Room.findOrCreate({ where: { id: 1 } })
+  .catch(err => console.log('Error in Sequelize: ', err));
+
 const createVideoEntry = (videoData, roomId) => {
   console.log(videoData);
   const videoEntry = {
@@ -71,7 +76,7 @@ const createVideoEntry = (videoData, roomId) => {
       RoomVideos.create({
       videoId: video.id,
 
-      roomId: roomId, 
+      roomId: roomId,
 
     })
       console.log('DONE CREATING ROOMVIDEOS');

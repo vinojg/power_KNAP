@@ -50,7 +50,7 @@ app.get('/room/:roomId', (req, res) => {
 
 app.get('/rooms', (req, res) => {
   db.findRooms()
-    .then(rooms => res.json(rooms));
+    .then(rooms => res.send(rooms));
 });
 
 app.get('/search', (req, res) => {

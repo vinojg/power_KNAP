@@ -252,3 +252,8 @@ body {
 .login {
   float: right;
 }
+
+.fillerImage {
+  height: 100%;
+  width: 100%;
+}

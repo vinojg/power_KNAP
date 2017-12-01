@@ -28,11 +28,12 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      roomList: [1, 2, 3],
+      roomList: [{}],
       roomBeingViewed: 1,
       modalIsOpen: false,
       view: 'home',
       user: {},
+      roomId: 0,
     };
 
     this.openModal = this.openModal.bind(this);
@@ -41,12 +42,15 @@ class App extends React.Component {
     this.renderView = this.renderView.bind(this);
     this.changeView = this.changeView.bind(this);
     this.getUser = this.getUser.bind(this);
+    this.setRoomId = this.setRoomId.bind(this);
   }
 
   componentDidMount() {
     this.setState({
       view: 'home',
     });
+
+    this.getRoomList();
   };
 
   getUser(user) {
@@ -96,8 +100,27 @@ class App extends React.Component {
     //   .then(({ data }) => this.setState({ roomList: data.rooms }));
   }
 
+  getRoomList() {
+    fetch('/rooms')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          roomList: data
+        });
+      })
+      .then(() => {
+        console.log(this.state.roomList);
+      })
+      .catch(err => {
+        console.err(err);
+      })
+  }
 
-  // note: must somehow pass room id to selected room as prop!!
+  setRoomId(id) {
+    this.setState({
+      roomId: id
+    });
+  }
 
   render() {
     return (
@@ -112,7 +135,10 @@ class App extends React.Component {
           style={customStyles}
           >
           <h2 ref={subtitle => this.subtitle = subtitle}>Select Room</h2>
-          <RoomList rooms={this.state.roomList} changeView={this.changeView} />
+          <RoomList
+            rooms={this.state.roomList}
+            changeView={this.changeView}
+            setRoomId={this.setRoomId} />
         </Modal>
       </div>
     );
