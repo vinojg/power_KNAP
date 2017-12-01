@@ -50,7 +50,7 @@ app.get('/room/:roomId', (req, res) => {
 
 app.get('/rooms', (req, res) => {
   db.findRooms()
-    .then(rooms => res.json(rooms));
+    .then(rooms => res.send(rooms));
 });
 
 app.get('/search', (req, res) => {
@@ -114,7 +114,7 @@ roomSpace.on('connection', (socket) => {
   roomId ? console.log('ROOM ID exists from socket connection:', roomId) : roomId = 1;
   console.log('ROOM ID after ternary:', roomId);
 
-  const sendPlaylist = () => (
+  const sendPlaylist = () => {
     db.findVideos(roomId)
       .then((videos) => {
         roomSpace.emit('retrievePlaylist', videos);
@@ -130,7 +130,7 @@ roomSpace.on('connection', (socket) => {
         }
       })
       .catch(err => roomSpace.emit('error', err))
-  );
+  };
 
   socket.on('saveToPlaylist', (video) => {
     const videoData = {
