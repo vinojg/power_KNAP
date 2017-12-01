@@ -170,6 +170,13 @@ roomSpace.on('connection', (socket) => {
     roomSpace.emit('pushingMessage', message);
   });
 
+  socket.on('vote', (room, video) => {
+    console.log('HERE IS THE ROOM AND VIDEO:', room, video);
+    // db.removeFromPlaylist(videoName)
+    //   .then(() => sendPlaylist(roomId))
+    //   .catch(err => roomSpace.emit('error', err));
+  });
+
   socket.on('disconnect', () => {
     if (Object.keys(socket.nsp.sockets).length > 0) {
       const newHost = Object.keys(socket.nsp.sockets)[0];
