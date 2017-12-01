@@ -36,6 +36,7 @@ class RoomView extends React.Component {
   }
 
   componentDidMount() {
+    this.props.closeModal();
     if (cookie.parse(document.cookie).user) {
       this.setState({ user: cookie.parse(document.cookie).user });
     }
