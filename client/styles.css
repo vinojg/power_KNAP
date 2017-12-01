@@ -42,12 +42,17 @@ body {
 
 /***** Navbar *****/
 .navbar {
-  grid-area: navbar;
+
   padding: 3px 14px;
   z-index: 1;
   color: #21252B;
   font-size: 1.5rem;
   text-shadow: white 0px 0px 0.1px;
+}
+
+.nav-link {
+  text-align: right !important;
+  display: inline-block !important;
 }
 
 /***** Playlist *****/

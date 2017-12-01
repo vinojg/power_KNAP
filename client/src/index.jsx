@@ -107,9 +107,6 @@ class App extends React.Component {
           roomList: data
         });
       })
-      .then(() => {
-        console.log(this.state.roomList);
-      })
       .catch(err => {
         console.err(err);
       })
@@ -124,7 +121,8 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <NavBar getUser={this.getUser} />
+        <NavBar
+          getUser={this.getUser} />
         { this.renderView() }
 
         <Modal
