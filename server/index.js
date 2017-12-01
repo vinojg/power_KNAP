@@ -110,16 +110,12 @@ roomSpace.on('connection', (socket) => {
     giveHostStatus(roomHost);
   }
 
-  console.log('DOES SERVER ROOM ID exists?!', roomId);
-  roomId ? console.log('ROOM ID exists from socket connection:', roomId) : roomId = 1;
-  console.log('ROOM ID after ternary:', roomId);
-
   const sendPlaylist = () => (
-    db.findVideos(roomId)
+    db.getRoomVideos(roomId) // this gets results from join table
       .then((videos) => {
         roomSpace.emit('retrievePlaylist', videos);
         if (videos.length === 0) throw videos;
-        if (videos.length >= 1) db.setStartTime(roomId);
+        if (videos.length === 1) db.setStartTime(roomId);
       })
       .catch((emptyPlaylist) => {
         // Check if the thrown item is an array rather than an Error
@@ -163,7 +159,7 @@ roomSpace.on('connection', (socket) => {
       body: 'Welcome to room ' + roomId,
       userName: 'socket.io bot',
       dateTime: Date.now(),
-    }
+    };
     console.log(roomId);
     roomSpace.to(roomId).emit('pushingMessage', roomStatusMessage);
     roomSpace.emit('pushingMessage', message);

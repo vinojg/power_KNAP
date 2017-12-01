@@ -1,18 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import io from 'socket.io-client';
 import moment from 'moment';
 import axios from 'axios';
 import cookie from 'cookie';
+import PropTypes from 'prop-types';
 
 import VideoPlayer from './VideoPlayer';
 import Playlist from './Playlist';
 import Search from './Search';
 import ChatView from './ChatView';
-import PropTypes from 'prop-types';
 
 const roomSocket = io('/room');
-
 
 class RoomView extends React.Component {
   constructor(props) {
@@ -125,8 +123,8 @@ class RoomView extends React.Component {
   }
 
   render() {
-    let playlistComponent;
-    playlistComponent = (<Playlist
+    const playlistComponent =
+      (<Playlist
         playlist={this.state.playlist}
         removeSelected={this.handleDelete}
         isHost={this.state.isHost}
@@ -159,5 +157,3 @@ export default RoomView;
 RoomView.propTypes = {
   roomId: PropTypes.number.isRequired,
 };
-
-// ReactDOM.render(<RoomView />, document.getElementById('room'));

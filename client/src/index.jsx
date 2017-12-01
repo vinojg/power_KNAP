@@ -66,7 +66,7 @@ class App extends React.Component {
   }
 
   openModal() {
-    this.setState({modalIsOpen: true});
+    this.setState({ modalIsOpen: true });
   }
 
   afterOpenModal() {
@@ -75,11 +75,11 @@ class App extends React.Component {
   }
 
   closeModal() {
-    this.setState({modalIsOpen: false});
+    this.setState({ modalIsOpen: false });
   }
 
   renderView() {
-    const {view} = this.state;
+    const { view } = this.state;
 
     if (view === 'home') {
       return <Home openModal={this.openModal} />;
