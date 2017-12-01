@@ -70,9 +70,11 @@ class RoomView extends React.Component {
   onPlayerStateChange(e) {
     // when video has ended
     if (e.data === 0) {
-      if (this.state.isHost) {
-        axios.patch(`/playNext/${this.state.playlist.length - 1}`);
-      }
+      console.log('player state change. e.data is: ', e.data);
+      // if (this.state.isHost) {
+        // axios.patch(`/playNext/${this.state.playlist.length - 1}`);
+        axios.patch(`/playNext?length=${this.state.playlist.length - 1}&roomId=${this.props.roomId}`);
+      // }
       this.setState({
         startOptions: { playerVars: { start: 0 } },
       });
@@ -128,7 +130,8 @@ class RoomView extends React.Component {
         playlist={this.state.playlist}
         removeSelected={this.handleDelete}
         isHost={this.state.isHost}
-        removeVideoFromPlaylist={this.state.isHost ? this.handleDelete : undefined}
+        // removeVideoFromPlaylist={this.state.isHost ? this.handleDelete : undefined}
+        removeVideoFromPlaylist={this.handleDelete}
       />);
 
     return (

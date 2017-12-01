@@ -30,20 +30,21 @@ app.use('/auth', authRoutes);
 // Room HTTP Requests
 app.get('/room/:roomId', (req, res) => {
   const roomId = Number(req.params.roomId);
+  let room;
   const roomProperties = {};
-  db.roomVideos.findAll();
-  db.findVideos(/*roomId*/) // we will find by room id!
+  db.Room.findById(roomId)
+    .then((result) => {
+      room = result;
+      roomProperties.index = room.indexKey;
+      roomProperties.start = room.startTime;
+      return room.getVideos();
+    })
     .then((videos) => {
       roomProperties.videos = videos;
-      return db.getRoomProperties(roomId);
+      res.json(roomProperties);
     })
-    .then(({ indexKey, startTime }) => {
-      roomProperties.index = indexKey;
-      roomProperties.start = startTime;
-    })
-    .then(() => res.json(roomProperties))
     .catch((err) => {
-      console.error(err);
+      console.error('Error in GET /:roomId ', err);
       res.sendStatus(404);
     });
 });
@@ -59,23 +60,27 @@ app.get('/search', (req, res) => {
     .catch(() => res.sendStatus(404));
 });
 
-app.patch('/playNext/:length', (req, res) => {
-  const roomPlaylistLength = Number(req.params.length);
-
-  const sendIndex = ({ indexKey }) => {
-    roomSpace.emit('playNext', indexKey);
-  };
-
-  const queueNextVideo = (playlistLength, currentIndex) => {
-    if (playlistLength === currentIndex) return db.resetRoomIndex();
-    return db.incrementIndex();
-  };
-
-  db.getIndex()
-    .then(currentSongIndex => queueNextVideo(roomPlaylistLength, currentSongIndex))
-    .then(room => sendIndex(room.dataValues))
-    // Update this 1 to roomId after this route has access
-    .then(() => db.setStartTime(1))
+app.patch('/playNext', (req, res) => {
+  console.log('Req received at /playNext with params', req.query.length, req.query.roomId);
+  const roomPlaylistLength = req.query.length;
+  const roomId = req.query.roomId;
+  const sendIndex = ({ indexKey }, roomId) => {
+    console.log('Sending indexKey: ', indexKey);
+    roomSpace.to(roomId).emit('playNext', indexKey);
+  }; // end of sendIndex
+  const queueNextVideo = (playlistLength, currentSongIndex) => {
+    console.log('Queuing next video');
+    return playlistLength === currentSongIndex
+      ? db.resetRoomIndex(roomId)
+      : db.incrementIndex(roomId);
+  }; // end of queueNextVideo
+  db.getIndex(roomId)
+    .then(currentSongIndex => {
+      console.log('Got currentSongIndex: ', currentSongIndex);
+      queueNextVideo(roomPlaylistLength, currentSongIndex);
+    })
+    .then(room => sendIndex(room.dataValues, roomId))
+    .then(() => db.setStartTime(roomId))
     .then(() => res.end())
     .catch(err => res.send(err));
 });
@@ -110,22 +115,22 @@ roomSpace.on('connection', (socket) => {
     giveHostStatus(roomHost);
   }
 
-  const sendPlaylist = () => (
+  const sendPlaylist = (roomId) => (
     db.getRoomVideos(roomId) // this gets results from join table
       .then((videos) => {
-        roomSpace.emit('retrievePlaylist', videos);
+        roomSpace.to(roomId).emit('retrievePlaylist', videos);
         if (videos.length === 0) throw videos;
         if (videos.length === 1) db.setStartTime(roomId);
       })
       .catch((emptyPlaylist) => {
         // Check if the thrown item is an array rather than an Error
         if (Array.isArray(emptyPlaylist)) {
-          roomSpace.emit('default');
+          roomSpace.to(roomId).emit('default');
         } else {
           throw emptyPlaylist;
         }
       })
-      .catch(err => roomSpace.emit('error', err))
+      .catch(err => roomSpace.to(roomId).emit('error', err))
   );
 
   socket.on('saveToPlaylist', (video) => {
@@ -135,15 +140,15 @@ roomSpace.on('connection', (socket) => {
       url: video.id.videoId,
       description: video.snippet.description,
     };
-
     return db.createVideoEntry(videoData, roomId)
       .then(() => sendPlaylist(roomId));
   });
 
   socket.on('removeFromPlaylist', (videoName) => {
-    db.removeFromPlaylist(videoName)
+    console.log('Received remove request for ', videoName);
+    db.removeFromPlaylist(videoName, roomId)
       .then(() => sendPlaylist(roomId))
-      .catch(err => roomSpace.emit('error', err));
+      .catch(err => roomSpace.to(roomId).emit('error', err));
   });
 
   socket.on('emitMessage', (message) => {
