@@ -31,6 +31,20 @@ class NavBar extends React.Component {
       console.log(cookie.parse(document.cookie));
       this.setState({ user: cookie.parse(document.cookie).user })
     }
+    this.openCreateModal();
+  }
+
+  openCreateModal() {
+    this.setState({createModalIsOpen: true});
+  }
+
+  afterOpenCreateModal() {
+    // references are now sync'd and can be accessed.
+    this.subtitle.style.color = '#000';
+  }
+
+  closeCreateModal() {
+    this.setState({createModalIsOpen: false});
   }
 
   createRoom() {
