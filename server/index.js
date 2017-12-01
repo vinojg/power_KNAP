@@ -169,6 +169,11 @@ roomSpace.on('connection', (socket) => {
 
   socket.on('vote', (room, video) => {
     console.log('HERE IS THE ROOM AND VIDEO:', room, video);
+    db.vote(room, video)
+    //console.log('VOTE BACK FROM DB')
+      .then(console.log('VOTE BACK FROM DB'))
+      .catch(err => roomSpace.emit('error', err));
+
     // db.removeFromPlaylist(videoName)
     //   .then(() => sendPlaylist(roomId))
     //   .catch(err => roomSpace.emit('error', err));

@@ -85,7 +85,7 @@ class App extends React.Component {
       return <Home openModal={this.openModal} />;
     } else if (view === 'room') {
       return <RoomView
-        roomId={this.state.roomBeingViewed}
+        roomId={this.state.roomId}
         getUser={this.getUser} />;
     } else if (view === 'user') {
       return <UserProfile user={this.state.user} />;

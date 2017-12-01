@@ -130,6 +130,14 @@ const saveGoogleUser = (googleProfile) => {
 
 const findUser = (user) => Users.findAll({ where: { google_name: user } });
 
+// const vote = (room, video) => Video.find({
+//   where: { videoName: title },
+// })
+//   .then(video => video.destroy());
+
+const vote = (room, video) => RoomVideos.update({ upVotes: Sequelize.literal('upVotes + 1') }, { where: { roomId: room, videoId: video }})
+  
+
 exports.findUser = findUser;
 exports.roomVideos = RoomVideos;
 
@@ -145,3 +153,4 @@ exports.removeFromPlaylist = removeFromPlaylist;
 exports.db = sequelize;
 exports.saveGoogleUser = saveGoogleUser;
 exports.Users = Users;
+exports.vote = vote;
