@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-const PlaylistEntry = ({ song, index, isHost, removeSelected }) => {
+const PlaylistEntry = ({ song, index, isHost, removeSelected, vote, removeForHost}) => {
 
   return (
       <div className="playlistEntry">
@@ -11,14 +11,14 @@ const PlaylistEntry = ({ song, index, isHost, removeSelected }) => {
           </button>
 
         <button className="voteButton"  onClick={() => { 
-
-          console.log('upVote') 
-          
+          console.log('upVote')
+          vote(song.id)
           }}>
+          
           +1
         </button>
         {isHost &&
-        <button className="deleteButton" >
+        <button className="deleteButton" onClick={() => { removeForHost(song.videoName); }}>
           Remove for Host
           </button>
       }
@@ -32,21 +32,3 @@ PlaylistEntry.propTypes = {
 };
 
 export default PlaylistEntry;
-  // if (isHost) {
-  //   return (
-  //     <div className="hostPlaylistEntry">
-  //       <button className="deleteButton" onClick={() => { removeSelected(song.videoName); }}>
-  //         Remove
-  //       </button>
-  //       <button className="voteButton"  onClick={() => { console.log('upVote') }}>
-  //         +1
-  //       </button>
-  //       <div className="songTitle">{index}. {song.videoName} </div>
-  //     </div>
-  //   );
-  // }
-
-
-        //   {isHost &&
-  
-        // }

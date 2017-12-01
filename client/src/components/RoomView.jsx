@@ -35,6 +35,7 @@ class RoomView extends React.Component {
     this.onPlayerReady = this.onPlayerReady.bind(this);
     this.saveToPlaylist = video => roomSocket.emit('saveToPlaylist', video);
     this.saveToPlaylist = this.saveToPlaylist.bind(this);
+    this.vote = this.vote.bind(this);
   }
 
   componentDidMount() {
@@ -105,6 +106,11 @@ class RoomView extends React.Component {
     });
   }
 
+  vote(videoId) {
+    console.log('vote function in roomView', this.props.roomId, videoId)
+    roomSocket.emit('vote', this.props.roomId, videoId)
+  }
+
   renderRoom() {
     console.log('Render room called. Room id was: ', this.props.roomId);
     return axios.get(`/room/${this.props.roomId}`)
@@ -130,7 +136,8 @@ class RoomView extends React.Component {
         playlist={this.state.playlist}
         removeSelected={this.handleDelete}
         isHost={this.state.isHost}
-        removeVideoFromPlaylist={this.state.isHost ? this.handleDelete : undefined}
+        vote={this.vote}
+        removeForHost={this.state.isHost ? this.handleDelete : undefined}
       />);
 
     return (

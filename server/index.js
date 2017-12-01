@@ -110,9 +110,7 @@ roomSpace.on('connection', (socket) => {
     giveHostStatus(roomHost);
   }
 
-  console.log('DOES SERVER ROOM ID exists?!', roomId);
-  roomId ? console.log('ROOM ID exists from socket connection:', roomId) : roomId = 1;
-  console.log('ROOM ID after ternary:', roomId);
+  
 
   const sendPlaylist = () => (
     db.findVideos(roomId)
@@ -167,6 +165,13 @@ roomSpace.on('connection', (socket) => {
     console.log(roomId);
     roomSpace.to(roomId).emit('pushingMessage', roomStatusMessage);
     roomSpace.emit('pushingMessage', message);
+  });
+
+  socket.on('vote', (room, video) => {
+    console.log('HERE IS THE ROOM AND VIDEO:', room, video);
+    // db.removeFromPlaylist(videoName)
+    //   .then(() => sendPlaylist(roomId))
+    //   .catch(err => roomSpace.emit('error', err));
   });
 
   socket.on('disconnect', () => {
