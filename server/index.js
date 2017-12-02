@@ -54,6 +54,17 @@ app.get('/rooms', (req, res) => {
     .then(rooms => res.send(rooms));
 });
 
+app.post('/createroom', (req, res) => {
+  db.createRoom(req.query.name)
+    .then((room) => {
+      console.log(room);
+      res.send(room);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});
+
 app.get('/search', (req, res) => {
   youtubeApi.grabVideos(req.query.query)
     .then(searchResults => res.json(searchResults))
