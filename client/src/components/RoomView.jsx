@@ -25,7 +25,7 @@ class RoomView extends React.Component {
       // TODO: eliminate the need for two separate username references
     };
 
-    this.handleDelete = videoName => roomSocket.emit('removeFromPlaylist', videoName);
+    this.removeVideoFromPlaylist = videoName => roomSocket.emit('removeFromPlaylist', videoName);
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
     this.emitMessage = this.emitMessage.bind(this);
     this.addToPlaylist = this.addToPlaylist.bind(this);
@@ -106,9 +106,9 @@ class RoomView extends React.Component {
     });
   }
 
-  vote(videoId) {
-    console.log('vote function in roomView', this.props.roomId, videoId)
+  vote(videoId, videoName) {
     roomSocket.emit('vote', this.props.roomId, videoId)
+    console.log(`Voted on video '${videoName}' in room ${this.props.roomId}`)
   }
 
   renderRoom() {
@@ -134,10 +134,10 @@ class RoomView extends React.Component {
     const playlistComponent =
       (<Playlist
         playlist={this.state.playlist}
-        removeSelected={this.handleDelete}
+        removeSelected={this.removeVideoFromPlaylist}
         isHost={this.state.isHost}
         vote={this.vote}
-        removeForHost={this.state.isHost ? this.handleDelete : undefined}
+        removeForHost={this.state.isHost ? this.removeVideoFromPlaylist : undefined}
       />);
 
     return (
