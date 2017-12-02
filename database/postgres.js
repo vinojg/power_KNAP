@@ -163,8 +163,11 @@ const saveGoogleUser = googleProfile => (
     .catch(err => console.log('Error saving user: ', err))
 );
 
+<<<<<<< HEAD
 const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})}
 
+=======
+>>>>>>> f92ba379b1f1f8fbd8628319b6fe3e30d60963d9
 exports.createRoom = createRoom;
 exports.Room = Room;
 exports.findUser = findUser;
