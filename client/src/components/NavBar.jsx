@@ -30,7 +30,7 @@ class NavBar extends React.Component {
       position: 'bottom left',
       theme: 'dark',
       time: 5000,
-      transition: 'scale'
+      transition: 'scale',
     }
 
     this.createRoom = this.createRoom.bind(this);
@@ -81,7 +81,6 @@ class NavBar extends React.Component {
     this.setState({createModalIsOpen: false});
   }
 
-<<<<<<< HEAD
   createRoom() {
     let roomExists = false;
 
@@ -112,8 +111,6 @@ class NavBar extends React.Component {
     this.setState({createModalIsOpen: false});
   }
 
-=======
->>>>>>> 47f66fac09e4f4039e6f83fcee16c8242bba3821
   render() {
     const view = this.state.user ?
       <ul>
