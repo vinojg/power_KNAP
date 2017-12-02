@@ -8,11 +8,18 @@ const PlaylistEntry = ({ song, index, isHost, removeSelected, vote, removeForHos
       <div className="playlistEntry">
       Votes: {song.roomvideos.votes}
         <button className="voteButton"  onClick={() => { 
-          vote(song.id, song.videoName)
+          vote(song.id, song.videoName, '+')
           }}>
           
-          +1
+          +
         </button>
+        <button className="voteButton"  onClick={() => { 
+          vote(song.id, song.videoName, '-')
+          }}>
+          
+          -
+        </button>
+        
         {isHost &&
         <button className="deleteButton" onClick={() => { removeForHost(song.videoName); }}>
           Remove for Host

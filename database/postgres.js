@@ -51,6 +51,7 @@ Room.belongsToMany(Video, { through: RoomVideos });
 
 // uncomment this first time running, then comment
 
+
 // Video.sync({ force: true })
 //   .then(() => Room.sync({ force: true }))
 //   .then(() => RoomVideos.sync({ force: true }))
@@ -171,7 +172,14 @@ const saveGoogleUser = googleProfile => (
     .catch(err => console.log('Error saving user: ', err))
 );
 
-const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})}
+const vote = (room, video, sign) => {
+  if (sign === '+') {
+    return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})
+  } else {
+    return RoomVideos.update({ votes: Sequelize.literal('votes - 1') }, { where: { roomId: room, videoId: video }})
+  }
+  
+}
 
 exports.createRoom = createRoom;
 exports.Room = Room;

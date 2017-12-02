@@ -116,9 +116,9 @@ class RoomView extends React.Component {
     });
   }
 
-  vote(videoId, videoName) {
-    roomSocket.emit('vote', this.props.roomId, videoId)
-    console.log(`Voted on video '${videoName}' in room ${this.props.roomId}`)
+  vote(videoId, videoName, sign) {
+    roomSocket.emit('vote', this.props.roomId, videoId, sign)
+    console.log(`Voted ${sign} on video '${videoName}' in room ${this.props.roomId}`)
   }
 
   renderRoom() {
