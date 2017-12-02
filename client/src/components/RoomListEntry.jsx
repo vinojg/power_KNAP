@@ -5,7 +5,7 @@ const RoomListEntry = (props) => (
       props.setRoomId(props.room.id);
       props.changeView('room');
     }}>
-    {props.room.id}
+    { props.room.name }
   </li>
 );
 

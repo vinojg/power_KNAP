@@ -85,6 +85,7 @@ class App extends React.Component {
     } else if (view === 'room') {
       return <RoomView
         roomId={this.state.roomId}
+        closeModal={this.closeModal}
         getUser={this.getUser} />;
     } else if (view === 'user') {
       return <UserProfile user={this.state.user} />;
@@ -107,9 +108,6 @@ class App extends React.Component {
           roomList: data
         });
       })
-      .then(() => {
-        console.log(this.state.roomList);
-      })
       .catch(err => {
         console.err(err);
       })
@@ -124,7 +122,11 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <NavBar getUser={this.getUser} />
+        <NavBar
+          getUser={this.getUser}
+          setRoomId={this.setRoomId}
+          changeView={this.changeView}
+          roomList={this.state.roomList} />
         { this.renderView() }
 
         <Modal

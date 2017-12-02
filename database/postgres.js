@@ -36,6 +36,7 @@ const Video = sequelize.define('video', {
 
 // TODO we will need to refer to the Room ID when there are multiple room instances
 const Room = sequelize.define('room', {
+  name: Sequelize.STRING,
   indexKey: Sequelize.INTEGER,
   startTime: Sequelize.DATE,
 
@@ -59,8 +60,30 @@ Room.belongsToMany(Video, { through: RoomVideos });
 // RoomVideos.sync({ force: true });
 
 // Seed room table to avoid errors
-Room.findOrCreate({ where: { id: 1 } })
+Room.findOrCreate({ where: { id: 1 }, defaults: {name: 'Awesome'} })
   .catch(err => console.log('Error in Sequelize: ', err));
+
+const createRoom = (name) => {
+  const newRoom = {
+    name: name,
+  }
+
+  return Room.findOne({where: {name: name}})
+    .then(room => {
+      if (room) {
+        return room;
+      } else {
+        return Room.create(newRoom);
+      }
+    })
+    .then((room) => {
+      console.log('Room created: ', name);
+      return room;
+    })
+    .catch(err => {
+      console.error(err);
+    });
+}
 
 const createVideoEntry = (videoData, roomId) => {
   // console.log(videoData);
@@ -149,6 +172,7 @@ const saveGoogleUser = googleProfile => (
 
 const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})}
 
+exports.createRoom = createRoom;
 exports.Room = Room;
 exports.findUser = findUser;
 exports.roomVideos = RoomVideos;
@@ -166,3 +190,4 @@ exports.db = sequelize;
 exports.saveGoogleUser = saveGoogleUser;
 exports.Users = Users;
 exports.vote = vote;
+exports.createRoom = createRoom;
