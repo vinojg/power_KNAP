@@ -87,6 +87,7 @@ class NavBar extends React.Component {
     this.props.roomList.forEach((room) => {
       if (room.name === this.state.createInput) {
         roomExists = true;
+        this.showAlert();
       }
     });
     if (!roomExists) {
