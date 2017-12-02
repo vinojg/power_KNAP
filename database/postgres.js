@@ -60,8 +60,9 @@ Room.belongsToMany(Video, { through: RoomVideos });
 // RoomVideos.sync({ force: true });
 
 // Seed room table to avoid errors
-Room.findOrCreate({ where: { id: 1 }, defaults: {name: 'Awesome'} })
-  .catch(err => console.log('Error in Sequelize: ', err));
+
+// Room.findOrCreate({ where: { id: 1 } })
+//   .catch(err => console.log('Error in Sequelize: ', err));
 
 const createRoom = (name) => {
   const newRoom = {
