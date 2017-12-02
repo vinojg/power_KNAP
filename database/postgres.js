@@ -140,7 +140,7 @@ const saveGoogleUser = googleProfile => (
     .catch(err => console.log('Error saving user: ', err))
 );
 
-const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { videoId: video }})}
+const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})}
 
 exports.Room = Room;
 exports.findUser = findUser;
