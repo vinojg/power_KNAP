@@ -31,16 +31,31 @@ class NavBar extends React.Component {
       console.log(cookie.parse(document.cookie));
       this.setState({ user: cookie.parse(document.cookie).user })
     }
-    this.openCreateModal();
+  }
+
+  createRoom() {
+    let roomExists = false;
+
+    this.props.roomList.forEach((room) => {
+      if (room.name === this.state.createInput) {
+        roomExists = true;
+      }
+    });
+    if (!roomExists) {
+      axios.post(`/createroom?name=${this.state.createInput}`)
+      .then((response) => {
+        this.closeCreateModal();
+        this.props.setRoomId(response.data.id);
+        this.props.changeView('room');
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    }
   }
 
   openCreateModal() {
     this.setState({createModalIsOpen: true});
-  }
-
-  afterOpenCreateModal() {
-    // references are now sync'd and can be accessed.
-    this.subtitle.style.color = '#000';
   }
 
   closeCreateModal() {
