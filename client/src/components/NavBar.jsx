@@ -1,6 +1,7 @@
 import React from 'react';
 import cookie from 'cookie';
 import CreateModal from 'react-modal';
+import axios from 'axios';
 
 const customStyles = {
   content : {
@@ -20,7 +21,9 @@ class NavBar extends React.Component {
     this.state = {
       user: null, // refers to Google username when logged in in chat
       createModalIsOpen: false,
+      createInput: '',
     }
+    this.createRoom = this.createRoom.bind(this);
   }
 
   componentDidMount() {
@@ -28,16 +31,31 @@ class NavBar extends React.Component {
       console.log(cookie.parse(document.cookie));
       this.setState({ user: cookie.parse(document.cookie).user })
     }
-    this.openCreateModal();
+  }
+
+  createRoom() {
+    let roomExists = false;
+
+    this.props.roomList.forEach((room) => {
+      if (room.name === this.state.createInput) {
+        roomExists = true;
+      }
+    });
+    if (!roomExists) {
+      axios.post(`/createroom?name=${this.state.createInput}`)
+      .then((response) => {
+        this.closeCreateModal();
+        this.props.setRoomId(response.data.id);
+        this.props.changeView('room');
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    }
   }
 
   openCreateModal() {
     this.setState({createModalIsOpen: true});
-  }
-
-  afterOpenCreateModal() {
-    // references are now sync'd and can be accessed.
-    this.subtitle.style.color = '#000';
   }
 
   closeCreateModal() {
@@ -47,9 +65,9 @@ class NavBar extends React.Component {
   render() {
     const view = this.state.user ?
       <ul>
-        <li className="nav-link"><a href="#">Create a Room</a></li>
+        <li className="nav-link" onClick={ () => this.openCreateModal() }><a href="#">Create a Room</a></li>
         <li className="nav-link" onClick={ () => this.props.getUser(this.state.user) }><a href="#">{this.state.user}</a></li>
-        <li className="nav-link" href="/auth/logout"><a href="#">Logout</a></li>
+        <li className="nav-link"><a href="/auth/logout">Logout</a></li>
       </ul> :
       <li className="nav-link"><a href="/auth/google">Login</a></li>;
 
@@ -65,12 +83,19 @@ class NavBar extends React.Component {
           </div>
           <CreateModal
             isOpen={this.state.createModalIsOpen}
-            onAfterOpen={this.afterOpenCreateModal}
-            onRequestClose={this.closeCreateModal}
+            onRequestClose={() => this.closeCreateModal()}
             style={customStyles}
             >
             <h2 ref={subtitle => this.subtitle = subtitle}>Create a Room</h2>
+            <input
+              placeholder="Room Name"
+              onChange={ (e) => this.setState({ createInput: e.target.value }) } ></input>
+            <button
+              onClick={ () => this.createRoom() }>Create</button>
+            <hr></hr>
+            <button onClick={() => this.closeCreateModal()}>Close</button>
           </CreateModal>
+
         </header>
     );
   }
