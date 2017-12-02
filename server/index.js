@@ -37,7 +37,7 @@ app.get('/room/:roomId', (req, res) => {
       room = result;
       roomProperties.index = room.indexKey;
       roomProperties.start = room.startTime;
-      return room.getVideos();
+      return db.getRoomVideos(roomId);
     })
     .then((videos) => {
       roomProperties.videos = videos;
