@@ -60,26 +60,36 @@ app.get('/search', (req, res) => {
     .catch(() => res.sendStatus(404));
 });
 
+// On video end, this endpoint is called
+// It gets the currentVideoIndex and does stuff
 app.patch('/playNext', (req, res) => {
-  console.log('Req received at /playNext with params', req.query.length, req.query.roomId);
-  const roomPlaylistLength = req.query.length;
+  console.log('Req received at /playNext...\n...req.query.length: ', req.query.length); //, req.query.roomId);
+  // This length (sent from client) is state.playlist.length - 1
+  const maxPlaylistIndex = req.query.length;
   const roomId = req.query.roomId;
-  const sendIndex = ({ indexKey }, roomId) => {
+
+  const sendIndex = (indexKey, roomId) => {
     console.log('Sending indexKey: ', indexKey);
     roomSpace.to(roomId).emit('playNext', indexKey);
   }; // end of sendIndex
-  const queueNextVideo = (playlistLength, currentSongIndex) => {
-    console.log('Queuing next video');
-    return playlistLength === currentSongIndex
-      ? db.resetRoomIndex(roomId)
-      : db.incrementIndex(roomId);
+
+  const queueNextVideo = (maxPlaylistIndex, currentVideoIndex) => {
+    console.log(`\nQueuing next video.\n
+      maxPlaylistIndex: ${maxPlaylistIndex}
+      CurrentVideoIndex: ${currentVideoIndex}
+      Equal? ${Number(maxPlaylistIndex) === Number(currentVideoIndex)}`);
+    // Are we at the last video in the playlist? Or gone too far?
+    return (Number(currentVideoIndex) >= Number(maxPlaylistIndex))
+      ? db.resetRoomIndex(roomId) // Set room's indexKey to 0
+      : db.incrementIndex(roomId); // Increment room's indexKey
   }; // end of queueNextVideo
+
   db.getIndex(roomId)
-    .then(currentSongIndex => {
-      console.log('Got currentSongIndex: ', currentSongIndex);
-      queueNextVideo(roomPlaylistLength, currentSongIndex);
+    .then(currentVideoIndex => {
+      console.log('Got currentVideoIndex: ', currentVideoIndex);
+      return queueNextVideo(maxPlaylistIndex, currentVideoIndex);
     })
-    .then(room => sendIndex(room.dataValues, roomId))
+    .then(room => sendIndex(room.indexKey, roomId))
     .then(() => db.setStartTime(roomId))
     .then(() => res.end())
     .catch(err => res.send(err));
@@ -144,8 +154,8 @@ roomSpace.on('connection', (socket) => {
       .then(() => sendPlaylist(roomId));
   });
 
-  socket.on('removeFromPlaylist', (videoName) => {
-    console.log('Received remove request for ', videoName);
+  socket.on('removeFromPlaylist', (videoName, indexOfVideoInPlaylist) => {
+    // console.log('Received remove request for ', videoName);
     db.removeFromPlaylist(videoName, roomId)
       .then(() => sendPlaylist(roomId))
       .catch(err => roomSpace.to(roomId).emit('error', err));
@@ -165,7 +175,7 @@ roomSpace.on('connection', (socket) => {
       userName: 'socket.io bot',
       dateTime: Date.now(),
     };
-    console.log(roomId);
+    // console.log(roomId);
     roomSpace.to(roomId).emit('pushingMessage', roomStatusMessage);
     roomSpace.emit('pushingMessage', message);
   });
