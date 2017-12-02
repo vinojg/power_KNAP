@@ -6,6 +6,7 @@ const PlaylistEntry = ({ song, index, isHost, removeSelected, vote, removeForHos
 
   return (
       <div className="playlistEntry">
+      Votes: {song.roomvideos.votes}
         <button className="voteButton"  onClick={() => { 
           vote(song.id, song.videoName)
           }}>

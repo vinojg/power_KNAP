@@ -174,6 +174,7 @@ roomSpace.on('connection', (socket) => {
 
     db.vote(room, video)
       .then(console.log('VOTE BACK FROM DB'))
+      .then(() => sendPlaylist(roomId))
       .catch(err => roomSpace.emit('error', err));
 
   });
