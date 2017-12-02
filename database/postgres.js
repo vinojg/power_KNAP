@@ -140,12 +140,6 @@ const saveGoogleUser = googleProfile => (
     .catch(err => console.log('Error saving user: ', err))
 );
 
-// const vote = (room, video) => Video.find({
-//   where: { videoName: title },
-// })
-//   .then(video => video.destroy());
-
-//const vote = (room, video) => RoomVideos.update({ upVotes: Sequelize.literal(upVotes + 1) }, { where: { roomId: room, videoId: video }})
 const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { videoId: video }})}
 
 exports.Room = Room;
