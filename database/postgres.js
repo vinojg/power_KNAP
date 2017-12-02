@@ -1,4 +1,5 @@
 require('dotenv').config();
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 
 let params = {};
@@ -29,11 +30,6 @@ const Video = sequelize.define('video', {
   description: Sequelize.STRING,
 });
 
-/* not used?? */
-// const Playlist = sequelize.define('playlist', {
-//   playlistName: Sequelize.STRING,
-// });
-
 // TODO we will need to refer to the Room ID when there are multiple room instances
 const Room = sequelize.define('room', {
   name: Sequelize.STRING,
@@ -54,14 +50,16 @@ Video.belongsToMany(Room, { through: RoomVideos });
 Room.belongsToMany(Video, { through: RoomVideos });
 
 // uncomment this first time running, then comment
-// Video.sync({ force: true });
-// Room.sync({ force: true });
-// Users.sync({ force: true });
-// RoomVideos.sync({ force: true });
 
-// Seed room table to avoid errors
-Room.findOrCreate({ where: { id: 1 }, defaults: {name: 'Awesome'} })
-  .catch(err => console.log('Error in Sequelize: ', err));
+// Video.sync({ force: true })
+//   .then(() => Room.sync({ force: true }))
+//   .then(() => RoomVideos.sync({ force: true }))
+//   .then(() => { // Seed room table to avoid errors
+//     return Room.findOrCreate({ where: { id: 1 } })
+//       .catch(err => console.log('Error in Sequelize: ', err));
+//   })
+//   .then(() => Users.sync({ force: true }))
+//   .catch(err => console.log('Error syncing in Sequelize: ', err));
 
 const createRoom = (name) => {
   const newRoom = {
@@ -144,7 +142,10 @@ const setStartTime = roomId => Room.findById(roomId)
 const findVideos = () => Video.findAll();
 
 const getRoomVideos = roomId => Room.findById(roomId)
-  .then(room => room.getVideos());
+  .then(room => room.getVideos())
+  .then(videos => {
+    return _.orderBy(videos, ['roomvideos.votes'], ['desc']);
+  });
 
 const removeFromPlaylist = (title, roomId) => {
   let room;
