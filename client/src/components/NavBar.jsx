@@ -2,6 +2,7 @@ import React from 'react';
 import cookie from 'cookie';
 import CreateModal from 'react-modal';
 import axios from 'axios';
+import Alert from 'react-alert';
 
 const customStyles = {
   content : {
@@ -23,6 +24,15 @@ class NavBar extends React.Component {
       createModalIsOpen: false,
       createInput: '',
     }
+
+    this.alertOptions = {
+      offset: 14,
+      position: 'bottom left',
+      theme: 'dark',
+      time: 5000,
+      transition: 'scale'
+    }
+
     this.createRoom = this.createRoom.bind(this);
   }
 
@@ -39,8 +49,10 @@ class NavBar extends React.Component {
     this.props.roomList.forEach((room) => {
       if (room.name === this.state.createInput) {
         roomExists = true;
+        this.showAlert();
       }
     });
+
     if (!roomExists) {
       axios.post(`/createroom?name=${this.state.createInput}`)
       .then((response) => {
@@ -52,6 +64,13 @@ class NavBar extends React.Component {
         console.error(err);
       });
     }
+  }
+
+  showAlert() {
+    this.msg.show('Room name already exists', {
+      time: 5000,
+      type: 'error',
+    });
   }
 
   openCreateModal() {
@@ -95,6 +114,7 @@ class NavBar extends React.Component {
             <hr></hr>
             <button onClick={() => this.closeCreateModal()}>Close</button>
           </CreateModal>
+          <Alert ref={a => this.msg = a} {...this.alertOptions} />
 
         </header>
     );

@@ -165,6 +165,7 @@ const saveGoogleUser = googleProfile => (
 
 const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})}
 
+exports.createRoom = createRoom;
 exports.Room = Room;
 exports.findUser = findUser;
 exports.roomVideos = RoomVideos;
