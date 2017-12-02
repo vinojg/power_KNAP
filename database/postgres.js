@@ -63,7 +63,7 @@ Room.findOrCreate({ where: { id: 1 } })
   .catch(err => console.log('Error in Sequelize: ', err));
 
 const createVideoEntry = (videoData, roomId) => {
-  console.log(videoData);
+  // console.log(videoData);
   const videoEntry = {
     videoName: videoData.title,
     creator: videoData.creator,
@@ -89,17 +89,23 @@ const getRoomProperties = roomId => Room.findById(roomId)
 
 // used to play next video in queue - see queueNextVideo in index.js
 const incrementIndex = roomId => Room.findById(roomId)
-  .then(room => room.increment('indexKey'));
+  .then(room => {
+    // console.log('\nIncrementing room indexKey');
+    return room.increment('indexKey'); // increment is Sequelize tool
+  })
 
 // used to play next video in queue - see queueNextVideo in index.js
 const resetRoomIndex = roomId => Room.findById(roomId)
-  .then(room => room.update({ indexKey: 0 }));
+  .then(room => {
+    // console.log('\nResetting room index to 0');
+    return room.update({ indexKey: 0 });
+  })
 
 const getIndex = (roomId) => {
-  console.log('getIndex request. roomId is: ', roomId);
+  // console.log('getIndex request. roomId is: ', roomId);
   return Room.findById(roomId)
     .then((room) => {
-      console.log('room.indexKey is: ', room.indexKey);
+      // console.log('room.indexKey is: ', room.indexKey);
       return room.indexKey;
     });
 };
@@ -110,7 +116,6 @@ const setStartTime = roomId => Room.findById(roomId)
       startTime: Date.now(),
     })
   ));
-
 
 // Video Queries
 const findVideos = () => Video.findAll();
@@ -125,7 +130,9 @@ const removeFromPlaylist = (title, roomId) => {
       room = roomFound;
       return Video.find({ where: { videoName: title } });
     })
-    .then(video => room.removeVideo(video)) // removeVideo is from sequelize
+    .then(video => {
+      return room.removeVideo(video);
+    }) // removeVideo is from sequelize
     .catch(err => console.log('Error removing video: ', err));
 };
 

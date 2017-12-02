@@ -25,7 +25,8 @@ class RoomView extends React.Component {
       // TODO: eliminate the need for two separate username references
     };
 
-    this.removeVideoFromPlaylist = videoName => roomSocket.emit('removeFromPlaylist', videoName);
+
+    this.removeVideoFromPlaylist = videoName => roomSocket.emit('removeFromPlaylist', videoName, this.state.playlist.indexOf(this.state.currentVideo));
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
     this.emitMessage = this.emitMessage.bind(this);
     this.addToPlaylist = this.addToPlaylist.bind(this);
@@ -45,15 +46,20 @@ class RoomView extends React.Component {
     roomSocket.emit('room', this.props.roomId);
     roomSocket.on('default', () => this.setState({ currentVideo: undefined }));
     roomSocket.on('host', () => this.setState({ isHost: true }));
-    roomSocket.on('retrievePlaylist', videos => this.addToPlaylist(videos));
+    roomSocket.on('retrievePlaylist', (videos) => {
+      // console.log('Received retrievePlaylist from server. Videos.length is: ', videos.length);
+      return this.addToPlaylist(videos);
+    });
     roomSocket.on('playNext', (next) => {
+      // console.log('Received playNext from server, changing currentVideo to next in playlist.');
+      // console.log('next is: ', next, ', and that video is: ', this.state.playlist[next]);
       this.setState({
         currentVideo: this.state.playlist[next],
       });
     });
     roomSocket.on('error', err => console.error(err));
     roomSocket.on('pushingMessage', (message) => {
-      console.log('Received pushingMessage: ', message);
+      // console.log('Received pushingMessage: ', message);
       this.setState({
         message,
       });
@@ -69,9 +75,11 @@ class RoomView extends React.Component {
   }
 
   onPlayerStateChange(e) {
+    // console.log('this.state.playlist.length is: ', this.state.playlist.length);
+    // console.log('this.state.currentVideo is: ', this.state.currentVideo);
     // when video has ended
     if (e.data === 0) {
-      console.log('player state change. e.data is: ', e.data);
+      // console.log('player state change. e.data is: ', e.data);
       // if (this.state.isHost) {
         // axios.patch(`/playNext/${this.state.playlist.length - 1}`);
         axios.patch(`/playNext?length=${this.state.playlist.length - 1}&roomId=${this.props.roomId}`);
@@ -87,12 +95,13 @@ class RoomView extends React.Component {
   }
 
   addToPlaylist(videos) {
+    // console.log('\naddToPlaylist called, videos.length: ', videos.length);
     if (videos.length === 1) {
       this.setState({
         playlist: videos,
         currentVideo: videos[0],
         startOptions: { playerVars: { start: 0 } },
-      });
+      }) //, () => console.log('Current index is: ', this.state.playlist.indexOf(this.state.currentVideo)));
     } else {
       this.setState({ playlist: videos });
     }
@@ -115,8 +124,8 @@ class RoomView extends React.Component {
     console.log('Render room called. Room id was: ', this.props.roomId);
     return axios.get(`/room/${this.props.roomId}`)
       .then(({ data }) => {
-        console.log('Room id was: ', this.props.roomId);
-        console.log('Room data is: ', data);
+        // console.log('Room id was: ', this.props.roomId);
+        // console.log('Room data is: ', data);
         const currentTime = Date.now();
         const timeLapsed = moment.duration(moment(currentTime).diff(data.start)).asSeconds();
         this.setState({
