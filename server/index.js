@@ -191,9 +191,9 @@ roomSpace.on('connection', (socket) => {
     roomSpace.emit('pushingMessage', message);
   });
 
-  socket.on('vote', (room, video) => {
+  socket.on('vote', (room, video, sign) => {
 
-    db.vote(room, video)
+    db.vote(room, video, sign)
       .then(console.log('VOTE BACK FROM DB'))
       .then(() => sendPlaylist(roomId))
       .catch(err => roomSpace.emit('error', err));
