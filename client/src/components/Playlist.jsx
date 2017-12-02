@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PlaylistEntry from './PlayListEntry';
 
-const Playlist = ({ playlist, isHost, removeSelected }) => (
+const Playlist = ({ playlist, isHost, removeSelected, vote, removeForHost }) => (
 
   <div className="container playlist">
     <h3>Playlist</h3>
@@ -14,6 +14,8 @@ const Playlist = ({ playlist, isHost, removeSelected }) => (
           isHost={isHost}
           index={index + 1}
           removeSelected={removeSelected}
+          vote={vote}
+          removeForHost={removeForHost}
         />))}
     </div>
   </div>

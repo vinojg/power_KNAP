@@ -25,7 +25,7 @@ class RoomView extends React.Component {
       // TODO: eliminate the need for two separate username references
     };
 
-    this.handleDelete = videoName => roomSocket.emit('removeFromPlaylist', videoName);
+    this.removeVideoFromPlaylist = videoName => roomSocket.emit('removeFromPlaylist', videoName);
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
     this.emitMessage = this.emitMessage.bind(this);
     this.addToPlaylist = this.addToPlaylist.bind(this);
@@ -33,6 +33,7 @@ class RoomView extends React.Component {
     this.onPlayerReady = this.onPlayerReady.bind(this);
     this.saveToPlaylist = video => roomSocket.emit('saveToPlaylist', video);
     this.saveToPlaylist = this.saveToPlaylist.bind(this);
+    this.vote = this.vote.bind(this);
   }
 
   componentDidMount() {
@@ -105,6 +106,11 @@ class RoomView extends React.Component {
     });
   }
 
+  vote(videoId, videoName) {
+    roomSocket.emit('vote', this.props.roomId, videoId)
+    console.log(`Voted on video '${videoName}' in room ${this.props.roomId}`)
+  }
+
   renderRoom() {
     console.log('Render room called. Room id was: ', this.props.roomId);
     return axios.get(`/room/${this.props.roomId}`)
@@ -128,10 +134,10 @@ class RoomView extends React.Component {
     const playlistComponent =
       (<Playlist
         playlist={this.state.playlist}
-        removeSelected={this.handleDelete}
+        removeSelected={this.removeVideoFromPlaylist}
         isHost={this.state.isHost}
-        // removeVideoFromPlaylist={this.state.isHost ? this.handleDelete : undefined}
-        removeVideoFromPlaylist={this.handleDelete}
+        vote={this.vote}
+        removeForHost={this.state.isHost ? this.removeVideoFromPlaylist : undefined}
       />);
 
     return (

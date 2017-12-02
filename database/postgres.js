@@ -44,7 +44,7 @@ const Room = sequelize.define('room', {
 // This is a join table to deal with multiple rooms each having videos
 const RoomVideos = sequelize.define('roomvideos', {
   playlistPosition: Sequelize.INTEGER,
-  upVotes: {
+  votes: {
     type: Sequelize.INTEGER,
     defaultValue: 0,
   },
@@ -140,6 +140,8 @@ const saveGoogleUser = googleProfile => (
     .catch(err => console.log('Error saving user: ', err))
 );
 
+const vote = (room, video) => {return RoomVideos.update({ votes: Sequelize.literal('votes + 1') }, { where: { roomId: room, videoId: video }})}
+
 exports.Room = Room;
 exports.findUser = findUser;
 exports.roomVideos = RoomVideos;
@@ -156,3 +158,4 @@ exports.removeFromPlaylist = removeFromPlaylist;
 exports.db = sequelize;
 exports.saveGoogleUser = saveGoogleUser;
 exports.Users = Users;
+exports.vote = vote;
