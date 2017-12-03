@@ -20,6 +20,7 @@ const PlaylistEntry = ({ song, index, isHost, removeSelected, vote, removeForHos
           -
         </button>
         
+
         {isHost &&
         <button className="deleteButton" onClick={() => { removeForHost(song.videoName); }}>
           Remove for Host
